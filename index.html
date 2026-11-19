@@ -59,6 +59,7 @@ function aviso(t) { msg.textContent = t; msg.style.display = t ? 'block' : 'none
 function classificar(tags) {
   var hw = tags.highway;
   if (hw === 'cycleway') return 'ciclovia';
+  if (/^(path|footway|pedestrian|track)$/.test(hw)) return (tags.bicycle === 'designated' || tags.bicycle === 'yes' && tags.segregated) ? 'ciclovia' : null;
   var lados = [tags.cycleway, tags['cycleway:left'], tags['cycleway:right'], tags['cycleway:both']];
   var ciclofaixa = false, ciclovia = false;
   lados.forEach(function (v) {
@@ -83,6 +84,7 @@ function carregar() {
   var vias = 'residential|living_street|tertiary|unclassified|secondary|primary|service|trunk';
   var q = '[out:json][timeout:25];(' +
     'way["highway"="cycleway"](' + bbox + ');' +
+    'way["highway"~"^(path|footway|pedestrian|track)$"]["bicycle"="designated"](' + bbox + ');' +
     'way["highway"~"^(' + vias + ')$"]["cycleway"~"^(lane|track)$"](' + bbox + ');' +
     'way["highway"~"^(' + vias + ')$"]["cycleway:left"~"^(lane|track)$"](' + bbox + ');' +
     'way["highway"~"^(' + vias + ')$"]["cycleway:right"~"^(lane|track)$"](' + bbox + ');' +
@@ -90,15 +92,15 @@ function carregar() {
     'way["highway"~"^(residential|living_street|unclassified|tertiary)$"](' + bbox + ');' +
     'way["highway"~"^(' + vias + ')$"]["maxspeed"~"^(10|15|20|30|40)$"](' + bbox + ');' +
     ');out geom;';
-  var id = ++ultimaBusca;
+  var id = ++ultimaBusca, falha = '';
 
   function tentar(i) {
-    if (i >= ENDPOINTS.length) { aviso('Sem conexão com o mapa'); return; }
+    if (i >= ENDPOINTS.length) { aviso('Sem conexão com o mapa' + (falha ? ' (' + falha + ')' : '')); return; }
     fetch(ENDPOINTS[i], { method: 'POST', body: 'data=' + encodeURIComponent(q),
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
       .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
       .then(function (j) { if (id === ultimaBusca) desenhar(j.elements || []); })
-      .catch(function () { tentar(i + 1); });
+      .catch(function (e) { falha = String(e && e.message || e).slice(0, 40); tentar(i + 1); });
   }
   tentar(0);
 }
