@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Autopropelido em Jacareí</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+  html, body { margin: 0; height: 100%; font-family: system-ui, sans-serif; }
+  #mapa { position: absolute; inset: 0; }
+  #legenda {
+    position: absolute; z-index: 1000; left: 12px; bottom: 24px;
+    background: #fff; padding: 10px 12px; border-radius: 8px;
+    box-shadow: 0 1px 6px rgba(0,0,0,.35); font-size: 14px; line-height: 1.7;
+  }
+  #legenda i { display: inline-block; width: 26px; height: 5px; border-radius: 3px; margin-right: 8px; vertical-align: middle; }
+  #gps {
+    position: absolute; z-index: 1000; right: 12px; bottom: 24px;
+    background: #fff; border: 0; padding: 12px 14px; border-radius: 8px;
+    box-shadow: 0 1px 6px rgba(0,0,0,.35); font-size: 15px;
+  }
+  #msg {
+    position: absolute; z-index: 1000; top: 12px; left: 50%; transform: translateX(-50%);
+    background: #fff; padding: 8px 12px; border-radius: 8px; font-size: 14px;
+    box-shadow: 0 1px 6px rgba(0,0,0,.35); display: none;
+  }
+</style>
+</head>
+<body>
+<div id="mapa"></div>
+<div id="msg"></div>
+<div id="legenda">
+  <div><i style="background:#1b8a3a"></i>Ciclovia</div>
+  <div><i style="background:#f08a00"></i>Ciclofaixa</div>
+  <div><i style="background:#1f6fd1"></i>Rua de até 40 km/h</div>
+</div>
+<button id="gps">Minha localização</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+var JACAREI = [-23.3053, -45.9658];
+var ZOOM_MIN = 14;
+var ENDPOINTS = [
+  'https://overpass-api.de/api/interpreter',
+  'https://overpass.kumi.systems/api/interpreter'
+];
+var COR = { ciclovia: '#1b8a3a', ciclofaixa: '#f08a00', via40: '#1f6fd1' };
+
+var mapa = L.map('mapa', { zoomControl: true }).setView(JACAREI, 15);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 19,
+  attribution: '&copy; OpenStreetMap'
+}).addTo(mapa);
+
+var camada = L.layerGroup().addTo(mapa);
+var msg = document.getElementById('msg');
+function aviso(t) { msg.textContent = t; msg.style.display = t ? 'block' : 'none'; }
+
+function classificar(tags) {
+  var hw = tags.highway;
+  if (hw === 'cycleway') return 'ciclovia';
+  var lados = [tags.cycleway, tags['cycleway:left'], tags['cycleway:right'], tags['cycleway:both']];
+  var ciclofaixa = false, ciclovia = false;
+  lados.forEach(function (v) {
+    if (v === 'track') ciclovia = true;
+    if (v === 'lane') ciclofaixa = true;
+  });
+  if (ciclovia) return 'ciclovia';
+  if (ciclofaixa) return 'ciclofaixa';
+  var ms = parseInt(tags.maxspeed, 10);
+  if (!isNaN(ms) && ms <= 40 && /^\d+$/.test(String(tags.maxspeed).trim())) return 'via40';
+  return null;
+}
+
+var ultimaBusca = 0;
+function carregar() {
+  if (mapa.getZoom() < ZOOM_MIN) { aviso('Aproxime o mapa para ver as vias'); return; }
+  aviso('');
+  var b = mapa.getBounds();
+  var bbox = [b.getSouth(), b.getWest(), b.getNorth(), b.getEast()].join(',');
+  var vias = 'residential|living_street|tertiary|unclassified|secondary|primary|service|trunk';
+  var q = '[out:json][timeout:25];(' +
+    'way["highway"="cycleway"](' + bbox + ');' +
+    'way["highway"~"^(' + vias + ')$"]["cycleway"~"^(lane|track)$"](' + bbox + ');' +
+    'way["highway"~"^(' + vias + ')$"]["cycleway:left"~"^(lane|track)$"](' + bbox + ');' +
+    'way["highway"~"^(' + vias + ')$"]["cycleway:right"~"^(lane|track)$"](' + bbox + ');' +
+    'way["highway"~"^(' + vias + ')$"]["cycleway:both"~"^(lane|track)$"](' + bbox + ');' +
+    'way["highway"~"^(' + vias + ')$"]["maxspeed"~"^(10|15|20|30|40)$"](' + bbox + ');' +
+    ');out geom;';
+  var id = ++ultimaBusca;
+
+  function tentar(i) {
+    if (i >= ENDPOINTS.length) { aviso('Sem conexão com o mapa'); return; }
+    fetch(ENDPOINTS[i], { method: 'POST', body: 'data=' + encodeURIComponent(q),
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function (j) { if (id === ultimaBusca) desenhar(j.elements || []); })
+      .catch(function () { tentar(i + 1); });
+  }
+  tentar(0);
+}
+
+function desenhar(elementos) {
+  camada.clearLayers();
+  // vias de 40 km/h por baixo, ciclofaixa e ciclovia por cima
+  var ordem = { via40: 0, ciclofaixa: 1, ciclovia: 2 };
+  var itens = [];
+  elementos.forEach(function (e) {
+    if (!e.geometry || !e.tags) return;
+    var tipo = classificar(e.tags);
+    if (!tipo) return;
+    itens.push({ tipo: tipo, pts: e.geometry.map(function (p) { return [p.lat, p.lon]; }), tags: e.tags });
+  });
+  itens.sort(function (a, b) { return ordem[a.tipo] - ordem[b.tipo]; });
+  itens.forEach(function (it) {
+    L.polyline(it.pts, { color: COR[it.tipo], weight: it.tipo === 'via40' ? 4 : 5, opacity: .85 })
+      .bindTooltip(it.tags.name || '', { sticky: true })
+      .addTo(camada);
+  });
+}
+
+mapa.on('moveend', carregar);
+carregar();
+
+// GPS
+var marcador = null, circulo = null, primeiraVez = true;
+function posicao(p) {
+  var ll = [p.coords.latitude, p.coords.longitude];
+  if (!marcador) {
+    marcador = L.circleMarker(ll, { radius: 8, color: '#fff', weight: 3, fillColor: '#d11f1f', fillOpacity: 1 }).addTo(mapa);
+    circulo = L.circle(ll, { radius: p.coords.accuracy, color: '#d11f1f', weight: 1, fillOpacity: .08 }).addTo(mapa);
+  } else {
+    marcador.setLatLng(ll);
+    circulo.setLatLng(ll).setRadius(p.coords.accuracy);
+  }
+  if (primeiraVez) { primeiraVez = false; mapa.setView(ll, 16); }
+}
+function iniciarGps() {
+  if (!navigator.geolocation) { aviso('Este aparelho não tem GPS'); return; }
+  navigator.geolocation.watchPosition(posicao,
+    function () { aviso('Permita o acesso à localização'); },
+    { enableHighAccuracy: true, maximumAge: 5000 });
+}
+document.getElementById('gps').addEventListener('click', function () {
+  if (marcador) mapa.setView(marcador.getLatLng(), 16);
+  else { primeiraVez = true; iniciarGps(); }
+});
+iniciarGps();
+</script>
+</body>
+</html>
