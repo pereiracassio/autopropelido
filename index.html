@@ -40,12 +40,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 var JACAREI = [-23.3053, -45.9658];
-var ZOOM_MIN = 14;
-var CELULA = 0.01; // graus (~1 km): o mapa carrega por quadrados e guarda o que já veio
-var ENDPOINTS = [
-  'https://overpass-api.de/api/interpreter',
-  'https://overpass.kumi.systems/api/interpreter'
-];
 var COR = { ciclovia: '#1b8a3a', ciclofaixa: '#f08a00', via40: '#1f6fd1', nao: '#d11f1f' };
 var NOME = { ciclovia: 'Pode: ciclovia', ciclofaixa: 'Pode: ciclofaixa', via40: 'Pode: rua de até 40 km/h', nao: 'Não pode: mais de 40 km/h' };
 
@@ -104,65 +98,21 @@ function popup(tags, c) {
   return d;
 }
 
-var jaTem = {};        // ids de vias já desenhadas
-var celulasOk = {};    // quadrados já carregados
-var pendentes = 0;
-
-function chaveCelula(i, j) { return i + ',' + j; }
-
-function carregar() {
-  if (mapa.getZoom() < ZOOM_MIN) { aviso('Aproxime o mapa para ver as vias'); return; }
-  var b = mapa.getBounds();
-  var i0 = Math.floor((b.getSouth() - CELULA) / CELULA), i1 = Math.floor((b.getNorth() + CELULA) / CELULA);
-  var j0 = Math.floor((b.getWest() - CELULA) / CELULA), j1 = Math.floor((b.getEast() + CELULA) / CELULA);
-  var faltam = [], mi = 1e9, ma = -1e9, mj = 1e9, mb = -1e9;
-  for (var i = i0; i <= i1; i++) for (var j = j0; j <= j1; j++) {
-    if (celulasOk[chaveCelula(i, j)]) continue;
-    faltam.push([i, j]);
-    mi = Math.min(mi, i); ma = Math.max(ma, i); mj = Math.min(mj, j); mb = Math.max(mb, j);
-  }
-  if (!faltam.length) return;
-  var bbox = [mi * CELULA, mj * CELULA, (ma + 1) * CELULA, (mb + 1) * CELULA].join(',');
-  var q = '[out:json][timeout:60];(' +
-    'way["highway"~"^(motorway|trunk|primary|secondary|tertiary|unclassified|residential|living_street|motorway_link|trunk_link|primary_link|secondary_link|tertiary_link)$"](' + bbox + ');' +
-    'way["highway"="cycleway"](' + bbox + ');' +
-    'way["highway"~"^(path|footway|pedestrian|track)$"]["bicycle"="designated"](' + bbox + ');' +
-    ');out geom tags;';
-  faltam.forEach(function (c) { celulasOk[chaveCelula(c[0], c[1])] = 'indo'; });
-  pendentes++; aviso('Carregando…');
-  var falha = '';
-
-  function terminou(ok) {
-    pendentes--;
-    faltam.forEach(function (c) { if (ok) celulasOk[chaveCelula(c[0], c[1])] = true; else delete celulasOk[chaveCelula(c[0], c[1])]; });
-    if (ok) { if (!pendentes) aviso(''); }
-    else aviso('Sem conexão com o mapa' + (falha ? ' (' + falha + ')' : ''));
-  }
-  function tentar(k) {
-    if (k >= ENDPOINTS.length) { terminou(false); return; }
-    fetch(ENDPOINTS[k], { method: 'POST', body: 'data=' + encodeURIComponent(q),
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
-      .then(function (r) { if (!r.ok) throw new Error('erro ' + r.status); return r.json(); })
-      .then(function (j) { desenhar(j.elements || []); terminou(true); })
-      .catch(function (e) { falha = String(e && e.message || e).slice(0, 40); tentar(k + 1); });
-  }
-  tentar(0);
-}
-
-function desenhar(elementos) {
-  elementos.forEach(function (e) {
-    if (!e.geometry || !e.tags || jaTem[e.id]) return;
-    jaTem[e.id] = true;
-    var c = classificar(e.tags);
-    var pts = e.geometry.map(function (p) { return [p.lat, p.lon]; });
-    L.polyline(pts, { color: COR[c.tipo], weight: c.tipo === 'nao' ? 4 : 5, opacity: c.tipo === 'nao' ? .7 : .9 })
-      .bindPopup(popup(e.tags, c))
+function desenhar(vias) {
+  vias.forEach(function (v) {
+    var c = classificar(v.t);
+    L.polyline(v.g, { color: COR[c.tipo], weight: c.tipo === 'nao' ? 4 : 5, opacity: c.tipo === 'nao' ? .7 : .9 })
+      .bindPopup(function () { return popup(v.t, c); })
       .addTo(camadas[c.tipo]);
   });
 }
 
-mapa.on('moveend', carregar);
-carregar();
+// os dados de Jacareí vêm prontos junto com o site (vias.json): nada de esperar servidor de mapa
+aviso('Carregando…');
+fetch('vias.json')
+  .then(function (r) { if (!r.ok) throw new Error('erro ' + r.status); return r.json(); })
+  .then(function (vias) { desenhar(vias); aviso(''); })
+  .catch(function (e) { aviso('Não foi possível carregar as vias (' + String(e && e.message || e).slice(0, 40) + ')'); });
 
 // GPS
 var marcador = null, circulo = null, primeiraVez = true;

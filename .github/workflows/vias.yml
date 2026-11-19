@@ -1,0 +1,28 @@
+name: Atualizar vias de Jacareí
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [claude/jolly-davinci-8uissp]
+    paths: [scripts/baixar-vias.py, .github/workflows/vias.yml]
+  schedule:
+    - cron: '0 6 1 * *'
+
+permissions:
+  contents: write
+
+jobs:
+  baixar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 scripts/baixar-vias.py
+      - name: Guardar vias.json
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add vias.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Atualiza as vias de Jacareí"
+          git push
