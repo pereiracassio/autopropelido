@@ -33,6 +33,7 @@
   <div><i style="background:#1b8a3a"></i>Ciclovia</div>
   <div><i style="background:#f08a00"></i>Ciclofaixa</div>
   <div><i style="background:#1f6fd1"></i>Rua de até 40 km/h</div>
+  <div><i style="background:#d4a900"></i>Sem velocidade marcada (veja a placa)</div>
   <div><i style="background:#d11f1f"></i>Não pode (mais de 40)</div>
 </div>
 <button id="gps">Minha localização</button>
@@ -40,8 +41,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 var JACAREI = [-23.3053, -45.9658];
-var COR = { ciclovia: '#1b8a3a', ciclofaixa: '#f08a00', via40: '#1f6fd1', nao: '#d11f1f' };
-var NOME = { ciclovia: 'Pode: ciclovia', ciclofaixa: 'Pode: ciclofaixa', via40: 'Pode: rua de até 40 km/h', nao: 'Não pode: mais de 40 km/h' };
+var COR = { ciclovia: '#1b8a3a', ciclofaixa: '#f08a00', via40: '#1f6fd1', incerta: '#d4a900', nao: '#d11f1f' };
+var NOME = { ciclovia: 'Pode: ciclovia', ciclofaixa: 'Pode: ciclofaixa', via40: 'Pode: rua de até 40 km/h', incerta: 'Velocidade não marcada: confira a placa', nao: 'Não pode: mais de 40 km/h' };
 
 var mapa = L.map('mapa', { zoomControl: true, preferCanvas: true }).setView(JACAREI, 15);
 mapa.createPane('gps').style.zIndex = 650;
@@ -52,7 +53,7 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 // uma camada por tipo, na ordem em que são desenhadas (a última fica por cima)
 var camadas = {};
-['nao', 'via40', 'ciclofaixa', 'ciclovia'].forEach(function (t) { camadas[t] = L.layerGroup().addTo(mapa); });
+['nao', 'incerta', 'via40', 'ciclofaixa', 'ciclovia'].forEach(function (t) { camadas[t] = L.layerGroup().addTo(mapa); });
 var msg = document.getElementById('msg');
 function aviso(t) { msg.textContent = t; msg.style.display = t ? 'block' : 'none'; }
 
@@ -62,7 +63,7 @@ function velocidade(v) {
 }
 
 // devolve { tipo, motivo }
-function classificar(tags) {
+function classificar(tags, nomes) {
   var hw = tags.highway || '';
   if (hw === 'cycleway') return { tipo: 'ciclovia', motivo: 'Marcada no mapa como ciclovia.' };
   if (/^(path|footway|pedestrian|track)$/.test(hw)) return { tipo: 'ciclovia', motivo: 'Caminho marcado no mapa como próprio para bicicleta.' };
@@ -77,10 +78,16 @@ function classificar(tags) {
       ? { tipo: 'via40', motivo: 'Velocidade marcada no mapa: ' + ms + ' km/h.' }
       : { tipo: 'nao', motivo: 'Velocidade marcada no mapa: ' + ms + ' km/h (acima de 40).' };
   }
-  // sem velocidade marcada: vale o CTB, art. 61
+  // sem velocidade marcada neste trecho: olha os outros trechos da mesma rua
+  var n = nomes && tags.name && nomes[tags.name];
+  if (n) {
+    if (n.max <= 40) return { tipo: 'via40', motivo: 'Sem velocidade marcada neste trecho, mas os outros trechos da mesma rua estão marcados com ' + n.max + ' km/h.' };
+    if (n.min > 40) return { tipo: 'nao', motivo: 'Sem velocidade marcada neste trecho, mas os outros trechos da mesma rua estão marcados com ' + n.min + ' km/h.' };
+  }
+  // sem nenhuma marcação: vale o CTB, art. 61, nas ruas que são claramente locais ou coletoras
   if (/^(residential|living_street|unclassified)$/.test(base)) return { tipo: 'via40', motivo: 'Sem velocidade marcada. Via local: 30 km/h pelo CTB.' };
   if (base === 'tertiary') return { tipo: 'via40', motivo: 'Sem velocidade marcada. Via coletora: 40 km/h pelo CTB.' };
-  if (/^(secondary|primary)$/.test(base)) return { tipo: 'nao', motivo: 'Sem velocidade marcada. Via arterial: 60 km/h pelo CTB.' };
+  if (/^(secondary|primary)$/.test(base)) return { tipo: 'incerta', motivo: 'Sem velocidade marcada. Pode ser coletora (40 km/h) ou arterial (60 km/h): vale a placa da rua.' };
   return { tipo: 'nao', motivo: 'Sem velocidade marcada. Via de trânsito rápido: 80 km/h pelo CTB.' };
 }
 
@@ -99,8 +106,16 @@ function popup(tags, c) {
 }
 
 function desenhar(vias) {
+  // velocidades marcadas em cada rua (por nome), para valer nos trechos sem marcação
+  var nomes = {};
   vias.forEach(function (v) {
-    var c = classificar(v.t);
+    var ms = velocidade(v.t.maxspeed);
+    if (ms === null || !v.t.name) return;
+    var n = nomes[v.t.name] || (nomes[v.t.name] = { min: ms, max: ms });
+    n.min = Math.min(n.min, ms); n.max = Math.max(n.max, ms);
+  });
+  vias.forEach(function (v) {
+    var c = classificar(v.t, nomes);
     L.polyline(v.g, { color: COR[c.tipo], weight: c.tipo === 'nao' ? 4 : 5, opacity: c.tipo === 'nao' ? .7 : .9 })
       .bindPopup(function () { return popup(v.t, c); })
       .addTo(camadas[c.tipo]);
