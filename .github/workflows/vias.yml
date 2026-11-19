@@ -17,12 +17,8 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
-      - run: python3 scripts/baixar-vias.py
-      - name: Guardar vias.json
+      - name: Baixar as vias
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@users.noreply.github.com"
-          git add vias.json
-          git diff --cached --quiet && exit 0
-          git commit -m "Atualiza as vias de Jacareí"
-          git push
+          python3 scripts/baixar-vias.py
