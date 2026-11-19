@@ -31,7 +31,7 @@ def salvar():
     with open("vias.json", "w", encoding="utf-8") as f:
         json.dump(vias, f, ensure_ascii=False, separators=(",", ":"))
     if os.environ.get("CI"):
-        subprocess.run("git add vias.json && git commit -q -m 'vias: %d' && git push -q" % len(vias), shell=True)
+        subprocess.run("git add vias.json && git commit -q -m 'vias: %d' && (git push -q || (git pull -q --rebase -X theirs && git push -q))" % len(vias), shell=True)
 
 
 caixas = []
