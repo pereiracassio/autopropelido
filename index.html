@@ -67,8 +67,10 @@ function classificar(tags) {
   });
   if (ciclovia) return 'ciclovia';
   if (ciclofaixa) return 'ciclofaixa';
+  // CTB art. 61: sem placa, via local = 30 km/h e coletora = 40 km/h
   var ms = parseInt(tags.maxspeed, 10);
-  if (!isNaN(ms) && ms <= 40 && /^\d+$/.test(String(tags.maxspeed).trim())) return 'via40';
+  if (!isNaN(ms)) return ms <= 40 ? 'via40' : null;
+  if (/^(residential|living_street|unclassified|tertiary)$/.test(hw)) return 'via40';
   return null;
 }
 
@@ -85,6 +87,7 @@ function carregar() {
     'way["highway"~"^(' + vias + ')$"]["cycleway:left"~"^(lane|track)$"](' + bbox + ');' +
     'way["highway"~"^(' + vias + ')$"]["cycleway:right"~"^(lane|track)$"](' + bbox + ');' +
     'way["highway"~"^(' + vias + ')$"]["cycleway:both"~"^(lane|track)$"](' + bbox + ');' +
+    'way["highway"~"^(residential|living_street|unclassified|tertiary)$"](' + bbox + ');' +
     'way["highway"~"^(' + vias + ')$"]["maxspeed"~"^(10|15|20|30|40)$"](' + bbox + ');' +
     ');out geom;';
   var id = ++ultimaBusca;
