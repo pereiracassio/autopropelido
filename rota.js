@@ -40,9 +40,8 @@
     }
     var nomes = [], pisos = [];
     vias.forEach(function (v) {
-      var tipo = v.c.tipo;
-      if (tipo === 'nao') return;
-      var peso = tipo === 'ciclovia' ? 0.85 : tipo === 'ciclofaixa' ? 0.95 : tipo === 'incerta' ? 1.4 : 1;
+      var tipo = v.c.tipo, proib = tipo === 'nao';
+      var peso = tipo === 'ciclovia' ? 0.85 : tipo === 'ciclofaixa' ? 0.95 : tipo === 'incerta' ? 1.4 : proib ? 6 : 1;
       var inc = tipo === 'incerta';
       var s = sentido(v.t);
       var wi = nomes.length; nomes.push(v.t.name || '');
@@ -53,8 +52,8 @@
         var a = no(v.g[k]), b = no(v.g[k + 1]);
         if (a === b) continue;
         var d = haversine(lat[a], lon[a], lat[b], lon[b]);
-        if (s >= 0) adj[a].push({ to: b, d: d, w: d * peso, via: wi, inc: inc, tp: tipo, pm: pm });
-        if (s <= 0) adj[b].push({ to: a, d: d, w: d * peso, via: wi, inc: inc, tp: tipo, pm: pm });
+        if (s >= 0) adj[a].push({ to: b, d: d, w: d * peso, via: wi, inc: inc, tp: tipo, pm: pm, pr: proib });
+        if (s <= 0) adj[b].push({ to: a, d: d, w: d * peso, via: wi, inc: inc, tp: tipo, pm: pm, pr: proib });
       }
     });
     // maior pedaço conectado (ignorando o sentido), para não ligar o ponto a uma ruazinha isolada
@@ -68,6 +67,8 @@
     tam.forEach(function (n, r) { if (n > maiorTam) { maiorTam = n; maior = r; } });
     var principal = new Uint8Array(lat.length);
     for (var m = 0; m < pai.length; m++) if (raizDe(m) === maior) principal[m] = 1;
+    var livre = new Uint8Array(lat.length);
+    adj.forEach(function (lista, a) { for (var q = 0; q < lista.length; q++) if (!lista[q].pr) { livre[a] = 1; livre[lista[q].to] = 1; } });
     // grade para achar o nó mais perto
     var grade = new Map();
     for (var n = 0; n < lat.length; n++) {
@@ -75,11 +76,11 @@
       var key = Math.floor(lat[n] / CELULA) + ',' + Math.floor(lon[n] / CELULA);
       var c = grade.get(key); if (c) c.push(n); else grade.set(key, [n]);
     }
-    return { lat: lat, lon: lon, adj: adj, nomes: nomes, pisos: pisos, grade: grade };
+    return { lat: lat, lon: lon, adj: adj, nomes: nomes, pisos: pisos, grade: grade, livre: livre };
   }
 
   // nó permitido mais perto de um ponto (até maxM metros); null se não houver
-  function maisPerto(G, plat, plon, maxM) {
+  function maisPerto(G, plat, plon, maxM, soLivres) {
     var ci = Math.floor(plat / CELULA), cj = Math.floor(plon / CELULA);
     var melhor = null, md = Infinity;
     var anel = Math.ceil(maxM / 200) + 1;
@@ -87,6 +88,7 @@
       var c = G.grade.get((ci + di) + ',' + (cj + dj));
       if (!c) continue;
       for (var k = 0; k < c.length; k++) {
+        if (soLivres && !G.livre[c[k]]) continue;
         var d = haversine(plat, plon, G.lat[c[k]], G.lon[c[k]]);
         if (d < md) { md = d; melhor = c[k]; }
       }
@@ -119,12 +121,13 @@
   // modo: 'padrao' (equilibrado), 'curta' (só a distância) ou 'ciclo' (prefere ciclovia e ciclofaixa)
   var CICLO = { ciclovia: 0.45, ciclofaixa: 0.65, via40: 1.1, incerta: 1.6 };
   function pesoDe(e, modo) {
-    if (modo === 'curta') return e.d;
-    if (modo === 'ciclo') return e.d * (CICLO[e.tp] || 1) * e.pm;
+    var f = e.pr ? 6 : 1;
+    if (modo === 'curta') return e.d * f;
+    if (modo === 'ciclo') return e.d * (CICLO[e.tp] || 1) * e.pm * f;
     return e.w;
   }
 
-  function caminho(G, de, para, permitirIncerta, modo) {
+  function caminho(G, de, para, permitirIncerta, modo, permitirProibido) {
     var N = G.lat.length;
     var g = new Float64Array(N).fill(Infinity), antes = new Int32Array(N).fill(-1), viaAntes = new Int32Array(N).fill(-1), fechado = new Uint8Array(N);
     var h = new Heap();
@@ -139,6 +142,7 @@
       for (var i = 0; i < lista.length; i++) {
         var e = lista[i];
         if (e.inc && !permitirIncerta) continue;
+        if (e.pr && !permitirProibido) continue;
         var ng = g[u] + pesoDe(e, modo);
         if (ng < g[e.to]) {
           g[e.to] = ng; antes[e.to] = u; viaAntes[e.to] = e.via;
@@ -152,7 +156,7 @@
     nos.reverse(); vias.reverse();
     var pts = nos.map(function (n) { return [G.lat[n], G.lon[n]]; });
     // distância total e trechos por nome de rua
-    var total = 0, trechos = [], inc = false, segNomes = [], pedra = 0, terra = 0;
+    var total = 0, trechos = [], inc = false, segNomes = [], segProib = [], proibido = 0, pedra = 0, terra = 0;
     for (var k = 1; k < nos.length; k++) {
       var a = nos[k - 1], b = nos[k], d = haversine(G.lat[a], G.lon[a], G.lat[b], G.lon[b]);
       total += d;
@@ -161,10 +165,12 @@
       if (G.pisos[vias[k]] === 'pedra') pedra += d; else if (G.pisos[vias[k]] === 'terra') terra += d;
       var ult = trechos[trechos.length - 1];
       if (ult && ult.nome === nome) ult.metros += d; else trechos.push({ nome: nome, metros: d });
-      var arestas = G.adj[a];
-      for (var q = 0; q < arestas.length; q++) if (arestas[q].to === b && arestas[q].via === vias[k] && arestas[q].inc) { inc = true; break; }
+      var arestas = G.adj[a], ed = null;
+      for (var q = 0; q < arestas.length; q++) if (arestas[q].to === b && arestas[q].via === vias[k]) { ed = arestas[q]; break; }
+      if (ed && ed.inc) inc = true;
+      if (ed && ed.pr) { proibido += d; segProib.push(true); } else segProib.push(false);
     }
-    return { pontos: pts, metros: total, trechos: trechos, temIncerta: inc, segNomes: segNomes, pedra: pedra, terra: terra };
+    return { pontos: pts, metros: total, trechos: trechos, temIncerta: inc, segNomes: segNomes, pedra: pedra, terra: terra, proibido: proibido, segProib: segProib };
   }
 
   var API = { pisoDe: pisoDe, construir: construir, maisPerto: maisPerto, caminho: caminho, haversine: haversine };

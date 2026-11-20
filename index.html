@@ -101,7 +101,7 @@
 </button>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-<script src="rota.js?v=4"></script>
+<script src="rota.js?v=5"></script>
 <script src="guia.js?v=2"></script>
 <script>
 var JACAREI = [-23.3053, -45.9658];
@@ -514,28 +514,48 @@ function calcular(opcoes) {
   if (!destino) return;
   if (!de) { resumo.textContent = 'Escolha de onde sair (toque no mapa em "Sair daqui") ou ligue o GPS.'; return; }
   if (!grafo) { resumo.textContent = 'Preparando as ruas…'; calcularQuandoPronto = true; return; }
-  var a = Rota.maisPerto(grafo, de.lat, de.lon, 500), b = Rota.maisPerto(grafo, destino.lat, destino.lon, 500);
-  if (!a) { resumo.textContent = 'Não há rua permitida perto do ponto de saída.'; return; }
-  if (!b) { resumo.textContent = 'Não há rua permitida perto do destino.'; return; }
+  var a = Rota.maisPerto(grafo, de.lat, de.lon, 500, true), b = Rota.maisPerto(grafo, destino.lat, destino.lon, 500, true);
   alternativas = [];
-  if (emGuia) { var rg = achar(a, b, modoRota); if (rg) alternativas.push({ modo: modoRota, nome: '', r: rg }); }
-  else MODOS.forEach(function (m) {
-    var r = achar(a, b, m[0]); if (!r) return;
-    var igual = alternativas.some(function (x) { return Math.abs(x.r.metros - r.metros) < Math.max(40, x.r.metros * 0.02); });
-    if (!igual) alternativas.push({ modo: m[0], nome: m[1], r: r });
-  });
-  if (!alternativas.length) { resumo.textContent = 'Não achei caminho só por vias permitidas entre esses dois pontos.'; return; }
+  if (a && b) {
+    if (emGuia) { var rg = achar(a, b, modoRota); if (rg) alternativas.push({ modo: modoRota, nome: '', r: rg }); }
+    else MODOS.forEach(function (m) {
+      var r = achar(a, b, m[0]); if (!r) return;
+      var igual = alternativas.some(function (x) { return Math.abs(x.r.metros - r.metros) < Math.max(40, x.r.metros * 0.02); });
+      if (!igual) alternativas.push({ modo: m[0], nome: m[1], r: r });
+    });
+  }
+  if (!alternativas.length) {
+    // último recurso: o caminho mais curto passando por via onde não pode, avisando
+    var a2 = Rota.maisPerto(grafo, de.lat, de.lon, 500), b2 = Rota.maisPerto(grafo, destino.lat, destino.lon, 500);
+    if (!a2) { resumo.textContent = 'Não há rua no mapa perto do ponto de saída.'; return; }
+    if (!b2) { resumo.textContent = 'Não há rua no mapa perto do destino.'; return; }
+    var rf = Rota.caminho(grafo, a2.no, b2.no, true, 'padrao', true);
+    if (!rf) { resumo.textContent = 'Não achei caminho entre esses dois pontos: faltam ruas no mapa entre eles.'; return; }
+    alternativas = [{ modo: 'padrao', nome: 'Equilibrada', r: rf }]; a = a2; b = b2;
+  }
   var esc = alternativas.filter(function (x) { return x.modo === modoRota; })[0] || alternativas[0];
   modoRota = esc.modo; ctxRota = { de: de, a: a, b: b, emGuia: emGuia }; falados = {};
   mostrarRota(esc);
 }
 
+// trechos da rota por via onde não pode: vermelho tracejado por cima
+function desenharProibidos(r) {
+  if (!r.segProib || !(r.proibido > 0)) return;
+  var run = [];
+  function fecha() { if (run.length > 1) L.polyline(run, { color: '#d11f1f', weight: 7, dashArray: '6 8', pane: 'gps', interactive: false }).addTo(camadaRota); run = []; }
+  for (var i = 0; i < r.segProib.length; i++) {
+    if (r.segProib[i]) { if (!run.length) run.push(r.pontos[i]); run.push(r.pontos[i + 1]); } else fecha();
+  }
+  fecha();
+}
+
 function mostrarRota(esc) {
   var r = esc.r, de = ctxRota.de, a = ctxRota.a, b = ctxRota.b, emGuia = ctxRota.emGuia;
   camadaRota.clearLayers(); resumo.textContent = '';
-  rotaAtual = Guia.preparar(r); rotaAtual.temIncerta = r.temIncerta; rotaAtual.trechos = r.trechos; rotaAtual.pedra = r.pedra; rotaAtual.terra = r.terra;
+  rotaAtual = Guia.preparar(r); rotaAtual.temIncerta = r.temIncerta; rotaAtual.trechos = r.trechos; rotaAtual.pedra = r.pedra; rotaAtual.terra = r.terra; rotaAtual.proibido = r.proibido;
   rotaAtual.alertas = obstLista.length ? Guia.alertas(rotaAtual, obstLista) : []; progresso = 0; foraConta = 0;
   linhaRota = L.polyline(r.pontos, { color: '#7a1fd1', weight: 7, opacity: .9, pane: 'gps', interactive: false }).addTo(camadaRota);
+  desenharProibidos(r);
   achados.textContent = '';
   mostrarBusca(false);
   if (emGuia) { desenharGuia(); return; }
@@ -563,6 +583,7 @@ function mostrarRota(esc) {
     t.appendChild(mo);
   }
   if (r.temIncerta) { var l2 = document.createElement('div'); l2.className = 'aviso-rota'; l2.textContent = 'Passa por trecho sem velocidade marcada: confira a placa.'; t.appendChild(l2); }
+  if (r.proibido > 20) { var l4 = document.createElement('div'); l4.className = 'aviso-rota'; l4.style.color = '#b71c1c'; l4.textContent = 'Não achei caminho só por ruas permitidas. Este é o mais curto e passa por ' + metros(r.proibido) + ' de via onde autopropelido não pode (em vermelho tracejado).'; t.appendChild(l4); }
   var pisoTxt = textoPiso(r.pedra, r.terra);
   if (pisoTxt) { var l3 = document.createElement('div'); l3.className = 'aviso-rota'; l3.textContent = pisoTxt; t.appendChild(l3); }
   t.appendChild(lista);
@@ -592,6 +613,7 @@ function desenharGuia() {
   var parar = document.createElement('button'); parar.className = 'leve'; parar.textContent = 'Parar'; parar.addEventListener('click', pararGuia);
   linha.appendChild(voz); linha.appendChild(parar); t.appendChild(linha);
   if (rotaAtual.temIncerta) { var l2 = document.createElement('div'); l2.className = 'aviso-rota'; l2.textContent = 'Tem trecho sem velocidade marcada: confira a placa.'; t.appendChild(l2); }
+  if (rotaAtual.proibido > 20) { var l5 = document.createElement('div'); l5.className = 'aviso-rota'; l5.style.color = '#b71c1c'; l5.textContent = 'Passa por ' + metros(rotaAtual.proibido) + ' de via onde autopropelido não pode.'; t.appendChild(l5); }
   var al = document.createElement('div'); al.className = 'aviso-rota'; al.id = 'guia-alerta'; al.style.fontWeight = 'bold'; t.appendChild(al);
   resumo.appendChild(t);
   var pr = marcador ? Guia.projetar(rotaAtual, marcador.getLatLng().lat, marcador.getLatLng().lng, 0, 80) : null;
