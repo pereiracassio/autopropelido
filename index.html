@@ -419,8 +419,10 @@ function ligarBussola() {
   window.addEventListener('deviceorientationabsolute', ao, true);
   window.addEventListener('deviceorientation', ao, true);
 }
+var bussolaPedida = false;
 function pedirBussola() {
   ligarBussola(); // sem permissão os eventos simplesmente não chegam; com permissão passam a chegar
+  if (bussolaPedida) return; bussolaPedida = true;
   try {
     if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') DeviceOrientationEvent.requestPermission().catch(function () {});
   } catch (e) {}
@@ -753,10 +755,13 @@ function posicao(p) {
   if (primeiraVez) { primeiraVez = false; if (destino && !origem) calcular(); else mapa.setView(ll, 16); }
   atualizarGuia(ll, p.coords.accuracy);
 }
+var gpsIniciado = false;
 function iniciarGps() {
+  if (gpsIniciado) return; // um GPS só durante todo o uso: pedir de novo faz o aparelho perguntar de novo
   if (!navigator.geolocation) { aviso('Este aparelho não tem GPS'); return; }
+  gpsIniciado = true;
   navigator.geolocation.watchPosition(posicao,
-    function () { aviso('Permita o acesso à localização'); },
+    function (e) { if (e && e.code === 1) { gpsIniciado = false; aviso('Permita o acesso à localização'); } },
     { enableHighAccuracy: true, maximumAge: 5000 });
 }
 document.getElementById('btn-legenda').addEventListener('click', function () {
