@@ -455,6 +455,11 @@ function buscarLocal(q) {
   return out.slice(0, 6);
 }
 
+function fecharAchados() { achados.textContent = ''; }
+mapa.on('click', fecharAchados);
+mapa.on('dragstart', fecharAchados);
+mapa.on('popupopen', fecharAchados);
+
 function mostrarAchados(itens) {
   achados.textContent = '';
   itens.forEach(function (x) {
@@ -463,6 +468,13 @@ function mostrarAchados(itens) {
     b.addEventListener('click', function () { achados.textContent = ''; definir('destino', x.lat, x.lon); });
     achados.appendChild(b);
   });
+  var fechar = document.createElement('button'); fechar.className = 'leve'; fechar.textContent = 'Fechar'; fechar.style.marginTop = '6px';
+  fechar.addEventListener('click', fecharAchados); achados.appendChild(fechar);
+}
+
+function semResultado() {
+  achados.textContent = 'Não encontrei esse lugar em Jacareí.';
+  setTimeout(function () { if (achados.textContent === 'Não encontrei esse lugar em Jacareí.') fecharAchados(); }, 4000);
 }
 
 var campoBusca = document.getElementById('busca'), achados = document.getElementById('achados');
@@ -478,13 +490,14 @@ function buscar() {
       .then(function (lista) {
         var extras = lista.map(function (x) { return { nome: x.display_name.split(',').slice(0, 3).join(','), tipo: '', lat: parseFloat(x.lat), lon: parseFloat(x.lon), dist: null }; });
         var todos = locais.concat(extras);
-        if (!todos.length) achados.textContent = 'Não encontrei esse lugar em Jacareí.'; else mostrarAchados(todos);
+        if (!todos.length) semResultado(); else mostrarAchados(todos);
       })
-      .catch(function () { if (locais.length) mostrarAchados(locais); else achados.textContent = 'Não encontrei esse lugar em Jacareí.'; });
+      .catch(function () { if (locais.length) mostrarAchados(locais); else semResultado(); });
   });
 }
 document.getElementById('buscar').addEventListener('click', buscar);
-campoBusca.addEventListener('keydown', function (e) { if (e.key === 'Enter') buscar(); });
+campoBusca.addEventListener('keydown', function (e) { if (e.key === 'Enter') buscar(); if (e.key === 'Escape') { fecharAchados(); campoBusca.blur(); } });
+campoBusca.addEventListener('input', function () { if (!campoBusca.value.trim()) fecharAchados(); });
 
 // GPS
 var marcador = null, circulo = null, primeiraVez = true;
