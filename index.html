@@ -20,6 +20,10 @@
   html, body { margin: 0; height: 100%; font-family: system-ui, sans-serif; overflow: hidden; }
   #atrib { position: absolute; z-index: 900; right: 4px; bottom: 2px; font-size: 10px; background: rgba(255,255,255,.75); padding: 1px 4px; }
   #bussola { display: none; }
+  .pin-serv { width: 26px; height: 26px; border-radius: 50%; color: #fff; text-align: center; line-height: 22px; font-size: 14px; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.5); box-sizing: border-box; }
+  .pin-recarga { background: #2e7d32; } .pin-eletrico { background: #c2185b; } .pin-outras { background: #607d8b; }
+  #legenda label { display: block; margin-top: 4px; }
+  #legenda .sep { border-top: 1px solid #ddd; margin: 6px 0; }
   #seta { width: 36px; height: 36px; }
   #mapa { position: absolute; inset: 0; }
   #legenda {
@@ -77,6 +81,10 @@
   <div><i style="background:#1f6fd1"></i>Rua de até 40 km/h</div>
   <div><i style="background:repeating-linear-gradient(90deg,#d4a900 0 9px,transparent 9px 14px)"></i>Sem velocidade marcada (veja a placa)</div>
   <div><i style="background:#d11f1f"></i>Não pode (mais de 40)</div>
+  <div class="sep"></div>
+  <div>⚡ Recarga · 🔧 Conserta elétricos (provável) · 🔩 Outras oficinas</div>
+  <label><input type="checkbox" id="ck-servicos" checked> Mostrar consertos e recarga</label>
+  <label><input type="checkbox" id="ck-obst"> Mostrar lombadas e semáforos</label>
 </div>
 <button id="btn-legenda" aria-label="Mostrar ou esconder o que cada cor significa">
   <svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke-width="3.5" stroke-linecap="round"><path d="M4 5h18" stroke="#1b8a3a"/><path d="M4 11h18" stroke="#1f6fd1"/><path d="M4 17h18" stroke="#d4a900"/><path d="M4 23h18" stroke="#d11f1f"/></svg>
@@ -87,8 +95,8 @@
 </button>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-<script src="rota.js?v=2"></script>
-<script src="guia.js?v=1"></script>
+<script src="rota.js?v=3"></script>
+<script src="guia.js?v=2"></script>
 <script>
 var JACAREI = [-23.3053, -45.9658];
 var COR = { ciclovia: '#0d6b2e', ciclofaixa: '#6fd17a', via40: '#1f6fd1', incerta: '#d4a900', nao: '#d11f1f' };
@@ -153,6 +161,80 @@ function acoes(latlng) {
   return d;
 }
 
+
+// ---------- pontos: recarga, consertos, lombadas e semáforos ----------
+var servicosLista = [], obstLista = [], camadaServ = L.layerGroup(), camadaObst = L.layerGroup();
+var RE_ELET = /patinete|scooter|autopropel|e-?bike|monociclo|(bike|bicicleta|moto|motocicleta)s? ?el[eé]tric/i;
+var ROTULO = { recarga: 'recarga', eletrico: 'conserta elétricos (provável)', outras: 'oficina' };
+var PALAVRAS = { recarga: 'recarga recarregar carregar carregador bateria eletrica', eletrico: 'conserto consertar oficina assistencia patinete autopropelido scooter bike eletrica eletrico', outras: 'conserto consertar oficina bicicletaria bicicleta moto' };
+var SIMBOLO = { recarga: '⚡', eletrico: '🔧', outras: '🔩' };
+
+function textoObst(p) {
+  if (p.t === 'semaforo') return 'Semáforo';
+  var v = (p.g && p.g.traffic_calming) || '';
+  if (v === 'rumble_strip') return 'Sonorizador';
+  if (/^(bump|hump|table|cushion|island|choker|chicane)$/.test(v) || v === 'yes') return v === 'island' || v === 'choker' || v === 'chicane' ? 'Estreitamento' : 'Lombada';
+  return 'Redutor de velocidade';
+}
+
+function carregarPontos() {
+  var pega = function (u) { return fetch(u).then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return []; }); };
+  Promise.all([pega('pontos.json?v=1'), pega('lugares.json?v=2')]).then(function (res) {
+    var pts = res[0], lug = res[1];
+    servicosLista = []; obstLista = [];
+    pts.forEach(function (p) {
+      if (p.t === 'lombada' || p.t === 'semaforo') { obstLista.push({ la: p.la, lo: p.lo, texto: textoObst(p), p: p }); return; }
+      var classe = p.t === 'recarga' ? 'recarga' : (p.t === 'scooter' || RE_ELET.test(p.n || '') || (p.g && (p.g['service:bicycle:electric'] === 'yes')) ? 'eletrico' : 'outras');
+      servicosLista.push({ n: p.n || 'Sem nome', la: p.la, lo: p.lo, classe: classe, rotulo: ROTULO[classe], palavras: PALAVRAS[classe], g: p.g || {} });
+    });
+    // lugares com nome de patinete/elétrico que ainda não estão na lista
+    lug.forEach(function (l) {
+      if (!RE_ELET.test(l[0])) return;
+      var jah = servicosLista.some(function (x) { return Math.abs(x.la - l[1]) < 0.0004 && Math.abs(x.lo - l[2]) < 0.0004; });
+      if (!jah) servicosLista.push({ n: l[0], la: l[1], lo: l[2], classe: 'eletrico', rotulo: ROTULO.eletrico, palavras: PALAVRAS.eletrico, g: {} });
+    });
+    indiceBusca = null;
+    camadaServ.clearLayers(); camadaObst.clearLayers();
+    servicosLista.forEach(function (sv) {
+      L.marker([sv.la, sv.lo], { icon: L.divIcon({ className: '', html: '<div class="pin-serv pin-' + sv.classe + '">' + SIMBOLO[sv.classe] + '</div>', iconSize: [26, 26], iconAnchor: [13, 13] }), keyboard: false, bubblingMouseEvents: false })
+        .on('click', function () { abrirServico(sv); }).addTo(camadaServ);
+    });
+    obstLista.forEach(function (o) {
+      L.circleMarker([o.la, o.lo], { radius: 5, color: '#333', weight: 1, fillColor: o.texto === 'Semáforo' ? '#e53935' : '#fdd835', fillOpacity: 1, pane: 'gps', bubblingMouseEvents: false })
+        .bindTooltip(o.texto).addTo(camadaObst);
+    });
+    atualizarCamadas();
+    if (rotaAtual) rotaAtual.alertas = Guia.alertas(rotaAtual, obstLista);
+  });
+}
+
+function abrirServico(sv) {
+  var d = document.createElement('div'); d.style.cssText = 'font-size:13px;line-height:1.5;max-width:240px';
+  function linha(t, est) { if (!t) return; var e = document.createElement('div'); e.textContent = t; if (est) e.style.cssText = est; d.appendChild(e); }
+  linha(sv.n, 'font-weight:bold;font-size:14px');
+  linha(SIMBOLO[sv.classe] + ' ' + ROTULO[sv.classe].charAt(0).toUpperCase() + ROTULO[sv.classe].slice(1));
+  if (sv.classe === 'eletrico') linha('O nome indica que mexe com elétricos: confirme antes de ir.', 'color:#8a6d00');
+  if (sv.classe === 'outras') linha('Confirme se mexem com autopropelido.', 'color:#8a6d00');
+  var g = sv.g;
+  linha(g.opening_hours && 'Horário: ' + g.opening_hours);
+  linha((g.phone || g['contact:phone']) && 'Telefone: ' + (g.phone || g['contact:phone']));
+  linha((g.website || g['contact:website']) && (g.website || g['contact:website']));
+  linha(g['addr:street'] && (g['addr:street'] + (g['addr:housenumber'] ? ', ' + g['addr:housenumber'] : '')));
+  var ir = document.createElement('button'); ir.className = 'acao'; ir.textContent = 'Ir até aqui';
+  ir.addEventListener('click', function () { mapa.closePopup(); definir('destino', sv.la, sv.lo); }); d.appendChild(ir);
+  L.popup().setLatLng([sv.la, sv.lo]).setContent(d).openOn(mapa);
+}
+
+function atualizarCamadas() {
+  var z = mapa.getZoom();
+  var s1 = document.getElementById('ck-servicos').checked && z >= 14, o1 = document.getElementById('ck-obst').checked && z >= 16;
+  if (s1 && !mapa.hasLayer(camadaServ)) camadaServ.addTo(mapa); if (!s1 && mapa.hasLayer(camadaServ)) mapa.removeLayer(camadaServ);
+  if (o1 && !mapa.hasLayer(camadaObst)) camadaObst.addTo(mapa); if (!o1 && mapa.hasLayer(camadaObst)) mapa.removeLayer(camadaObst);
+}
+document.getElementById('ck-servicos').addEventListener('change', atualizarCamadas);
+document.getElementById('ck-obst').addEventListener('change', atualizarCamadas);
+mapa.on('zoomend', atualizarCamadas);
+
 // ---------- meus lugares (ficam guardados neste aparelho) ----------
 var CHAVE_MEUS = 'autoprop-meus-lugares', camadaMeus = null;
 function lerMeus() { try { return JSON.parse(localStorage.getItem(CHAVE_MEUS) || '[]'); } catch (e) { return []; } }
@@ -179,6 +261,14 @@ function desenharMeus() {
   });
 }
 
+function nomePiso(sf) {
+  if (!sf) return 'não informado';
+  var k = Rota.pisoDe({ surface: sf });
+  if (k === 'pedra') return 'paralelepípedo ou blocos';
+  if (k === 'terra') return 'terra, cascalho ou areia';
+  return { asphalt: 'asfalto', concrete: 'concreto', 'concrete:plates': 'placas de concreto', paved: 'pavimentado' }[sf] || sf;
+}
+
 function popup(tags, c, latlng) {
   var d = document.createElement('div');
   d.style.cssText = 'font-size:13px;line-height:1.5;max-width:240px';
@@ -188,6 +278,9 @@ function popup(tags, c, latlng) {
   linha(c.motivo);
   linha('Tipo no mapa: ' + (tags.highway || '-'));
   linha('Velocidade marcada: ' + (tags.maxspeed || 'não marcada'));
+  linha('Piso: ' + nomePiso(tags.surface));
+  if (tags.lit) linha('Iluminação: ' + (tags.lit === 'yes' ? 'sim' : tags.lit === 'no' ? 'não' : tags.lit));
+  if (tags.oneway === 'yes') linha('Mão única');
   var todas = Object.keys(tags).map(function (k) { return k + '=' + tags[k]; }).join('\n');
   d.appendChild(acoes(latlng));
   linha(todas, 'white-space:pre-wrap;color:#666;font-size:11px;margin-top:6px');
@@ -220,7 +313,7 @@ function desenhar(vias) {
 aviso('Carregando…');
 fetch('vias.json?v=3')
   .then(function (r) { if (!r.ok) throw new Error('erro ' + r.status); return r.json(); })
-  .then(function (vias) { viasCarregadas = vias; desenhar(vias); aviso(''); })
+  .then(function (vias) { viasCarregadas = vias; desenhar(vias); aviso(''); carregarPontos(); })
   .catch(function (e) { aviso('Não foi possível carregar as vias (' + String(e && e.message || e).slice(0, 40) + ')'); });
 
 
@@ -362,6 +455,13 @@ window.addEventListener('resize', function () { if (guiando && orientacao === 'r
 
 var guiando = false, rotaAtual = null, linhaRota = null, progresso = 0, foraConta = 0, travaTela = null;
 
+function textoPiso(pedra, terra) {
+  var p = [];
+  if (pedra > 50) p.push(metros(pedra) + ' de paralelepípedo');
+  if (terra > 50) p.push(metros(terra) + ' de terra');
+  return p.length ? 'Passa por ' + p.join(' e ') + '.' : '';
+}
+
 function calcular(opcoes) {
   var emGuia = !!(opcoes && opcoes.guia);
   var de = (origem && !emGuia) ? origem : (marcador ? { lat: marcador.getLatLng().lat, lon: marcador.getLatLng().lng } : origem);
@@ -375,7 +475,8 @@ function calcular(opcoes) {
   var r = Rota.caminho(grafo, a.no, b.no, false);
   if (!r) r = Rota.caminho(grafo, a.no, b.no, true);
   if (!r) { resumo.textContent = 'Não achei caminho só por vias permitidas entre esses dois pontos.'; return; }
-  rotaAtual = Guia.preparar(r); rotaAtual.temIncerta = r.temIncerta; rotaAtual.trechos = r.trechos; progresso = 0; foraConta = 0;
+  rotaAtual = Guia.preparar(r); rotaAtual.temIncerta = r.temIncerta; rotaAtual.trechos = r.trechos; rotaAtual.pedra = r.pedra; rotaAtual.terra = r.terra;
+  rotaAtual.alertas = obstLista.length ? Guia.alertas(rotaAtual, obstLista) : []; progresso = 0; foraConta = 0;
   linhaRota = L.polyline(r.pontos, { color: '#7a1fd1', weight: 7, opacity: .9, pane: 'gps', interactive: false }).addTo(camadaRota);
   achados.textContent = '';
   document.getElementById('linha-busca').style.display = 'none';
@@ -395,6 +496,8 @@ function calcular(opcoes) {
   var lim = document.createElement('button'); lim.className = 'leve'; lim.textContent = 'Limpar'; lim.addEventListener('click', limpar);
   linha.appendChild(ir); linha.appendChild(ruas); linha.appendChild(lim); t.appendChild(linha);
   if (r.temIncerta) { var l2 = document.createElement('div'); l2.className = 'aviso-rota'; l2.textContent = 'Passa por trecho sem velocidade marcada: confira a placa.'; t.appendChild(l2); }
+  var pisoTxt = textoPiso(r.pedra, r.terra);
+  if (pisoTxt) { var l3 = document.createElement('div'); l3.className = 'aviso-rota'; l3.textContent = pisoTxt; t.appendChild(l3); }
   t.appendChild(lista);
   resumo.appendChild(t);
   mapa.fitBounds(L.latLngBounds(r.pontos).extend([de.lat, de.lon]).extend([destino.lat, destino.lon]), { paddingTopLeft: [20, 90], paddingBottomRight: [20, 80] });
@@ -410,6 +513,7 @@ function desenharGuia() {
   var parar = document.createElement('button'); parar.className = 'leve'; parar.textContent = 'Parar'; parar.addEventListener('click', pararGuia);
   linha.appendChild(parar); t.appendChild(linha);
   if (rotaAtual.temIncerta) { var l2 = document.createElement('div'); l2.className = 'aviso-rota'; l2.textContent = 'Tem trecho sem velocidade marcada: confira a placa.'; t.appendChild(l2); }
+  var al = document.createElement('div'); al.className = 'aviso-rota'; al.id = 'guia-alerta'; al.style.fontWeight = 'bold'; t.appendChild(al);
   resumo.appendChild(t);
   var pr = marcador ? Guia.projetar(rotaAtual, marcador.getLatLng().lat, marcador.getLatLng().lng, 0, 80) : null;
   textoGuia(Guia.proximo(rotaAtual, 0), pr ? pr.along : 0);
@@ -423,6 +527,11 @@ function textoGuia(passo, along) {
   else i.textContent = passo.texto + (falta < 15 ? ' agora' : ' em ' + metros(falta));
   var resta = Math.max(0, rotaAtual.total - along);
   r.textContent = metros(resta) + ' · ' + Math.max(1, Math.round(resta / 1000 / VELOCIDADE_KMH * 60)) + ' min';
+  var al = document.getElementById('guia-alerta');
+  if (al) {
+    var prox = (rotaAtual.alertas || []).filter(function (a) { return a.along - along > -5 && a.along - along < 300; })[0];
+    al.textContent = prox ? prox.texto + (prox.along - along < 15 ? ' agora' : ' em ' + metros(prox.along - along)) : '';
+  }
 }
 
 function iniciarGuia() {
@@ -469,6 +578,7 @@ function norm(t) { return String(t || '').toLowerCase().normalize('NFD').replace
 
 function montarIndice(lugares) {
   var lista = [], vistas = {};
+  servicosLista.forEach(function (sv) { lista.push({ n: sv.n, k: norm(sv.n + ' ' + sv.palavras), lat: sv.la, lon: sv.lo, t: sv.rotulo }); });
   lerMeus().forEach(function (m) { lista.push({ n: m.n, k: norm(m.n), lat: m.lat, lon: m.lon, t: 'meu lugar', meu: true }); });
   (lugares || []).forEach(function (l) { lista.push({ n: l[0], k: norm(l[0]), lat: l[1], lon: l[2], t: TIPOS[l[3]] || '' }); });
   viasCarregadas.forEach(function (v) {
@@ -524,8 +634,8 @@ function buscar() {
   var pronto = indiceBusca ? Promise.resolve() : fetch('lugares.json?v=2').then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return []; }).then(function (l) { indiceBusca = montarIndice(l); });
   pronto.then(function () {
     var locais = buscarLocal(q).map(function (x) { return { nome: x.e.n, tipo: x.e.t, lat: x.e.lat, lon: x.e.lon, dist: x.d }; });
-    if (locais.length >= 3) { mostrarAchados(locais); return; }
-    return fetch('https://nominatim.openstreetmap.org/search?format=json&limit=5&countrycodes=br&bounded=1&viewbox=-46.12,-23.15,-45.80,-23.45&accept-language=pt-BR&q=' + encodeURIComponent(q))
+    if (locais.length >= 3 && !/\d/.test(q)) { mostrarAchados(locais); return; }
+    return fetch('https://nominatim.openstreetmap.org/search?format=json&limit=5&countrycodes=br&bounded=1&viewbox=-46.12,-23.00,-45.65,-23.45&accept-language=pt-BR&q=' + encodeURIComponent(q))
       .then(function (r) { if (!r.ok) throw new Error('erro ' + r.status); return r.json(); })
       .then(function (lista) {
         var extras = lista.map(function (x) { return { nome: x.display_name.split(',').slice(0, 3).join(','), tipo: '', lat: parseFloat(x.lat), lon: parseFloat(x.lon), dist: null }; });

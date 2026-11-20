@@ -66,6 +66,22 @@
     return g.passos[g.passos.length - 1];
   }
 
-  var API = { preparar: preparar, projetar: projetar, proximo: proximo, dist: dist };
+  // avisos no caminho: lombadas e semáforos a até 12 m do trajeto, na ordem em que aparecem
+  function alertas(g, pontos) {
+    var la0 = 90, la1 = -90, lo0 = 180, lo1 = -180, i;
+    for (i = 0; i < g.pts.length; i++) { la0 = Math.min(la0, g.pts[i][0]); la1 = Math.max(la1, g.pts[i][0]); lo0 = Math.min(lo0, g.pts[i][1]); lo1 = Math.max(lo1, g.pts[i][1]); }
+    var m = 0.0003, achados = [];
+    pontos.forEach(function (p) {
+      if (p.la < la0 - m || p.la > la1 + m || p.lo < lo0 - m || p.lo > lo1 + m) return;
+      var pr = projetar(g, p.la, p.lo, 0, g.pts.length);
+      if (pr && pr.dist <= 12) achados.push({ along: pr.along, texto: p.texto });
+    });
+    achados.sort(function (a, b) { return a.along - b.along; });
+    var out = [];
+    achados.forEach(function (a) { var u = out[out.length - 1]; if (u && u.texto === a.texto && a.along - u.along < 25) return; out.push(a); });
+    return out;
+  }
+
+  var API = { alertas: alertas, preparar: preparar, projetar: projetar, proximo: proximo, dist: dist };
   if (typeof module !== 'undefined' && module.exports) module.exports = API; else raiz.Guia = API;
 })(typeof window !== 'undefined' ? window : this);
