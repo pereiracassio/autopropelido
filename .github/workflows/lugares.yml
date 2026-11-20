@@ -22,7 +22,3 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@users.noreply.github.com"
           python3 scripts/baixar-lugares.py
-          git add lugares.json
-          git diff --cached --quiet && exit 0
-          git commit -q -m "Atualiza os lugares de Jacareí"
-          git push || (git pull -q --rebase -X theirs && git push)

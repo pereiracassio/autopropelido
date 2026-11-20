@@ -1,5 +1,5 @@
 """Baixa do OpenStreetMap os lugares com nome de Jacareí (comércios, serviços, bairros) em lugares.json."""
-import json, sys, time, urllib.request, urllib.parse
+import json, os, subprocess, sys, time, urllib.request, urllib.parse
 
 S, W, N, E = -23.45, -46.12, -23.15, -45.80
 URLS = [
@@ -17,21 +17,31 @@ def consulta(bbox):
 
 
 lugares, vistos, falhas = [], set(), 0
-for a in range(2):
-    for b in range(2):
-        s = S + (N - S) * a / 2
-        n = S + (N - S) * (a + 1) / 2
-        w = W + (E - W) * b / 2
-        e = W + (E - W) * (b + 1) / 2
+
+
+def salvar():
+    with open("lugares.json", "w", encoding="utf-8") as f:
+        json.dump(lugares, f, ensure_ascii=False, separators=(",", ":"))
+    if os.environ.get("CI"):
+        subprocess.run("git add lugares.json && git commit -q -m 'lugares: %d' && (git push -q || (git pull -q --rebase -X theirs && git push -q))" % len(lugares), shell=True)
+
+
+NL = NC = 4
+for a in range(NL):
+    for b in range(NC):
+        s = S + (N - S) * a / NL
+        n = S + (N - S) * (a + 1) / NL
+        w = W + (E - W) * b / NC
+        e = W + (E - W) * (b + 1) / NC
         bbox = "%.4f,%.4f,%.4f,%.4f" % (s, w, n, e)
         ok = False
-        for tent in range(6):
+        for tent in range(4):
             url = URLS[tent % len(URLS)]
             try:
                 req = urllib.request.Request(
                     url, data=urllib.parse.urlencode({"data": consulta(bbox)}).encode(),
                     headers={"User-Agent": "autopropelido-dados (github.com/pereiracassio/autopropelido)"})
-                d = json.loads(urllib.request.urlopen(req, timeout=150).read())
+                d = json.loads(urllib.request.urlopen(req, timeout=90).read())
                 for el in d["elements"]:
                     t = el.get("tags", {})
                     if el["type"] == "node":
@@ -53,9 +63,9 @@ for a in range(2):
                 time.sleep(5)
         if not ok:
             falhas += 1
+        salvar()
+        time.sleep(2)
 
 print("lugares", len(lugares), "falhas", falhas)
 if falhas:
     sys.exit(1)
-with open("lugares.json", "w", encoding="utf-8") as f:
-    json.dump(lugares, f, ensure_ascii=False, separators=(",", ":"))
