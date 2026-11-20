@@ -1,5 +1,5 @@
 // Deixa o mapa abrir na hora e funcionar mesmo sem internet (as ruas ficam guardadas no aparelho).
-var VERSAO = 'autoprop-v3';
+var VERSAO = 'autoprop-v4';
 var TILES = 'autoprop-tiles-v1';
 var BASE = [
   './', 'index.html', 'rota.js?v=1', 'vias.json?v=2', 'lugares.json?v=1', 'manifest.webmanifest',
@@ -39,7 +39,14 @@ self.addEventListener('fetch', function (e) {
     }));
     return;
   }
-  // o resto do site: mostra o guardado e atualiza por trás (na próxima abertura já vem o novo)
+  // a página e o código vêm da rede primeiro (nunca mostra versão velha); sem internet, usa o guardado
+  if (u.origin === location.origin && !/\.(json|png|webmanifest)$/.test(u.pathname)) {
+    e.respondWith(caches.open(VERSAO).then(function (c) {
+      return fetch(req).then(function (r) { if (r.ok) c.put(req, r.clone()); return r; }).catch(function () { return c.match(req); });
+    }));
+    return;
+  }
+  // ruas, lugares, ícones e mapa: mostra o guardado e atualiza por trás
   if (u.origin === location.origin || u.hostname === 'cdnjs.cloudflare.com') {
     e.respondWith(caches.open(VERSAO).then(function (c) {
       return c.match(req, { ignoreSearch: false }).then(function (hit) {

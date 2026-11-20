@@ -42,8 +42,11 @@
   #painel button { font-size: 15px; padding: 8px 10px; border: 0; border-radius: 6px; background: #7a1fd1; color: #fff; }
   #painel button.leve { background: #eee; color: #222; }
   #achados button { display: block; width: 100%; text-align: left; margin-top: 6px; background: #f3f3f3; color: #222; }
-  #resumo { margin-top: 8px; line-height: 1.5; }
-  #resumo details { margin-top: 4px; max-height: 40vh; overflow: auto; }
+  #resumo .linha-rota { display: flex; align-items: center; gap: 6px; }
+  #resumo .soma { flex: 1; font-weight: bold; }
+  #resumo button { padding: 8px 12px; }
+  #resumo .aviso-rota { margin-top: 4px; color: #8a6d00; font-size: 13px; }
+  #resumo .lista-ruas { margin-top: 6px; max-height: 38vh; overflow: auto; line-height: 1.6; }
   .acao { display: inline-block; margin: 6px 6px 0 0; font-size: 15px; padding: 8px 10px; border: 0; border-radius: 6px; background: #7a1fd1; color: #fff; }
   .pino { width: 28px; height: 28px; border-radius: 50%; color: #fff; font-weight: bold; text-align: center; line-height: 28px; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.5); }
   #msg {
@@ -56,7 +59,7 @@
 <body>
 <div id="mapa"></div>
 <div id="painel">
-  <div class="linha"><input id="busca" type="search" placeholder="Para onde? (rua, bairro, lugar)" autocomplete="off"><button id="buscar">Buscar</button></div>
+  <div class="linha" id="linha-busca"><input id="busca" type="search" placeholder="Para onde? (rua, bairro, lugar)" autocomplete="off"><button id="buscar">Buscar</button></div>
   <div id="achados"></div>
   <div id="resumo"></div>
 </div>
@@ -212,6 +215,7 @@ function limpar() {
   origem = destino = null;
   ['origem', 'destino'].forEach(function (t) { if (pinos[t]) { mapa.removeLayer(pinos[t]); pinos[t] = null; } });
   camadaRota.clearLayers(); resumo.textContent = '';
+  document.getElementById('linha-busca').style.display = 'flex';
 }
 
 function metros(m) { return m >= 1000 ? (m / 1000).toFixed(1).replace('.', ',') + ' km' : Math.round(m / 10) * 10 + ' m'; }
@@ -234,14 +238,20 @@ function calcular() {
   });
   var min = Math.max(1, Math.round(r.metros / 1000 / VELOCIDADE_KMH * 60));
   var t = document.createElement('div');
-  var l1 = document.createElement('div'); l1.style.fontWeight = 'bold'; l1.textContent = metros(r.metros) + ' · cerca de ' + min + ' min a ' + VELOCIDADE_KMH + ' km/h'; t.appendChild(l1);
-  if (r.temIncerta) { var l2 = document.createElement('div'); l2.style.color = '#8a6d00'; l2.textContent = 'Passa por trecho sem velocidade marcada: confira a placa.'; t.appendChild(l2); }
-  var det = document.createElement('details'), sm = document.createElement('summary'); sm.textContent = 'Ver as ruas do caminho'; det.appendChild(sm);
-  r.trechos.forEach(function (z) { var li = document.createElement('div'); li.textContent = z.nome + ' · ' + metros(z.metros); det.appendChild(li); });
-  t.appendChild(det);
-  var lim = document.createElement('button'); lim.className = 'leve'; lim.textContent = 'Limpar'; lim.style.marginTop = '6px'; lim.addEventListener('click', limpar); t.appendChild(lim);
+  var linha = document.createElement('div'); linha.className = 'linha-rota';
+  var soma = document.createElement('span'); soma.className = 'soma'; soma.textContent = metros(r.metros) + ' · ' + min + ' min'; linha.appendChild(soma);
+  var lista = document.createElement('div'); lista.className = 'lista-ruas'; lista.style.display = 'none';
+  r.trechos.forEach(function (z) { var li = document.createElement('div'); li.textContent = z.nome + ' · ' + metros(z.metros); lista.appendChild(li); });
+  var ruas = document.createElement('button'); ruas.textContent = 'Ruas';
+  ruas.addEventListener('click', function () { lista.style.display = lista.style.display === 'none' ? 'block' : 'none'; });
+  var lim = document.createElement('button'); lim.className = 'leve'; lim.textContent = 'Limpar'; lim.addEventListener('click', limpar);
+  linha.appendChild(ruas); linha.appendChild(lim); t.appendChild(linha);
+  if (r.temIncerta) { var l2 = document.createElement('div'); l2.className = 'aviso-rota'; l2.textContent = 'Passa por trecho sem velocidade marcada: confira a placa.'; t.appendChild(l2); }
+  t.appendChild(lista);
+  achados.textContent = '';
+  document.getElementById('linha-busca').style.display = 'none';
   resumo.appendChild(t);
-  mapa.fitBounds(L.latLngBounds(r.pontos).extend([de.lat, de.lon]).extend([destino.lat, destino.lon]), { paddingTopLeft: [20, 170], paddingBottomRight: [20, 60] });
+  mapa.fitBounds(L.latLngBounds(r.pontos).extend([de.lat, de.lon]).extend([destino.lat, destino.lon]), { paddingTopLeft: [20, 90], paddingBottomRight: [20, 80] });
 }
 
 // busca de lugar: primeiro nos lugares e ruas guardados de Jacareí, depois no Nominatim
