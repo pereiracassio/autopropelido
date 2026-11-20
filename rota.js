@@ -132,17 +132,18 @@
     nos.reverse(); vias.reverse();
     var pts = nos.map(function (n) { return [G.lat[n], G.lon[n]]; });
     // distância total e trechos por nome de rua
-    var total = 0, trechos = [], inc = false;
+    var total = 0, trechos = [], inc = false, segNomes = [];
     for (var k = 1; k < nos.length; k++) {
       var a = nos[k - 1], b = nos[k], d = haversine(G.lat[a], G.lon[a], G.lat[b], G.lon[b]);
       total += d;
       var nome = G.nomes[vias[k]] || 'rua sem nome';
+      segNomes.push(nome);
       var ult = trechos[trechos.length - 1];
       if (ult && ult.nome === nome) ult.metros += d; else trechos.push({ nome: nome, metros: d });
       var arestas = G.adj[a];
       for (var q = 0; q < arestas.length; q++) if (arestas[q].to === b && arestas[q].via === vias[k] && arestas[q].inc) { inc = true; break; }
     }
-    return { pontos: pts, metros: total, trechos: trechos, temIncerta: inc };
+    return { pontos: pts, metros: total, trechos: trechos, temIncerta: inc, segNomes: segNomes };
   }
 
   var API = { construir: construir, maisPerto: maisPerto, caminho: caminho, haversine: haversine };
