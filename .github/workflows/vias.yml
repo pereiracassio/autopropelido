@@ -19,3 +19,8 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@users.noreply.github.com"
           python3 scripts/baixar-vias.py
+          python3 scripts/recortar.py
+          git add vias.json limite.json
+          git diff --cached --quiet && exit 0
+          git commit -q -m "Vias só de Jacareí"
+          git push || (git pull -q --rebase -X theirs && git push)

@@ -290,7 +290,7 @@ function buscar() {
     return fetch('https://nominatim.openstreetmap.org/search?format=json&limit=5&countrycodes=br&bounded=1&viewbox=-46.12,-23.15,-45.80,-23.45&accept-language=pt-BR&q=' + encodeURIComponent(q))
       .then(function (r) { if (!r.ok) throw new Error('erro ' + r.status); return r.json(); })
       .then(function (lista) {
-        var extras = lista.map(function (x) { return { nome: x.display_name.split(',').slice(0, 3).join(','), tipo: '', lat: parseFloat(x.lat), lon: parseFloat(x.lon), dist: null }; });
+        var extras = lista.filter(function (x) { return /Jacare[ií]/.test(x.display_name) && !/S[ãa]o Jos[ée] dos Campos/.test(x.display_name); }).map(function (x) { return { nome: x.display_name.split(',').slice(0, 3).join(','), tipo: '', lat: parseFloat(x.lat), lon: parseFloat(x.lon), dist: null }; });
         var todos = locais.concat(extras);
         if (!todos.length) achados.textContent = 'Não encontrei esse lugar em Jacareí.'; else mostrarAchados(todos);
       })
