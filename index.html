@@ -4,6 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Autopropelido em Jacareí</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#7a1fd1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Autopropelido">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icone-192.png">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <style>
   html, body { margin: 0; height: 100%; font-family: system-ui, sans-serif; }
@@ -19,8 +27,21 @@
     background: #fff; border: 0; padding: 12px 14px; border-radius: 8px;
     box-shadow: 0 1px 6px rgba(0,0,0,.35); font-size: 15px;
   }
+  #painel {
+    position: absolute; z-index: 1000; top: 12px; left: 56px; right: 12px; max-width: 440px;
+    background: #fff; border-radius: 8px; box-shadow: 0 1px 6px rgba(0,0,0,.35); padding: 8px; font-size: 14px;
+  }
+  #painel .linha { display: flex; gap: 6px; }
+  #painel input { flex: 1; min-width: 0; font-size: 16px; padding: 8px; border: 1px solid #bbb; border-radius: 6px; }
+  #painel button { font-size: 15px; padding: 8px 10px; border: 0; border-radius: 6px; background: #7a1fd1; color: #fff; }
+  #painel button.leve { background: #eee; color: #222; }
+  #achados button { display: block; width: 100%; text-align: left; margin-top: 6px; background: #f3f3f3; color: #222; }
+  #resumo { margin-top: 8px; line-height: 1.5; }
+  #resumo details { margin-top: 4px; max-height: 40vh; overflow: auto; }
+  .acao { display: inline-block; margin: 6px 6px 0 0; font-size: 15px; padding: 8px 10px; border: 0; border-radius: 6px; background: #7a1fd1; color: #fff; }
+  .pino { width: 28px; height: 28px; border-radius: 50%; color: #fff; font-weight: bold; text-align: center; line-height: 28px; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.5); }
   #msg {
-    position: absolute; z-index: 1000; top: 12px; left: 50%; transform: translateX(-50%);
+    position: absolute; z-index: 1000; top: 70px; left: 50%; transform: translateX(-50%);
     background: #fff; padding: 8px 12px; border-radius: 8px; font-size: 14px;
     box-shadow: 0 1px 6px rgba(0,0,0,.35); display: none;
   }
@@ -28,6 +49,11 @@
 </head>
 <body>
 <div id="mapa"></div>
+<div id="painel">
+  <div class="linha"><input id="busca" type="search" placeholder="Para onde? (rua, bairro, lugar)" autocomplete="off"><button id="buscar">Buscar</button></div>
+  <div id="achados"></div>
+  <div id="resumo"></div>
+</div>
 <div id="msg"></div>
 <div id="legenda">
   <div><i style="background:#1b8a3a"></i>Ciclovia</div>
@@ -39,12 +65,13 @@
 <button id="gps">Minha localização</button>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="rota.js?v=1"></script>
 <script>
 var JACAREI = [-23.3053, -45.9658];
 var COR = { ciclovia: '#1b8a3a', ciclofaixa: '#f08a00', via40: '#1f6fd1', incerta: '#d4a900', nao: '#d11f1f' };
 var NOME = { ciclovia: 'Pode: ciclovia', ciclofaixa: 'Pode: ciclofaixa', via40: 'Pode: rua de até 40 km/h', incerta: 'Velocidade não marcada: confira a placa', nao: 'Não pode: mais de 40 km/h' };
 
-var mapa = L.map('mapa', { zoomControl: true, preferCanvas: true }).setView(JACAREI, 15);
+var mapa = L.map('mapa', { zoomControl: true, renderer: L.canvas({ tolerance: 8 }) }).setView(JACAREI, 15);
 mapa.createPane('gps').style.zIndex = 650;
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 19,
@@ -91,7 +118,17 @@ function classificar(tags, nomes) {
   return { tipo: 'nao', motivo: 'Sem velocidade marcada. Via de trânsito rápido: 80 km/h pelo CTB.' };
 }
 
-function popup(tags, c) {
+function acoes(latlng) {
+  var d = document.createElement('div');
+  [['Sair daqui', 'origem'], ['Ir até aqui', 'destino']].forEach(function (a) {
+    var b = document.createElement('button'); b.className = 'acao'; b.textContent = a[0];
+    b.addEventListener('click', function () { mapa.closePopup(); definir(a[1], latlng.lat, latlng.lng); });
+    d.appendChild(b);
+  });
+  return d;
+}
+
+function popup(tags, c, latlng) {
   var d = document.createElement('div');
   d.style.cssText = 'font-size:13px;line-height:1.5;max-width:240px';
   function linha(txt, estilo) { var p = document.createElement('div'); p.textContent = txt; if (estilo) p.style.cssText = estilo; d.appendChild(p); }
@@ -101,6 +138,7 @@ function popup(tags, c) {
   linha('Tipo no mapa: ' + (tags.highway || '-'));
   linha('Velocidade marcada: ' + (tags.maxspeed || 'não marcada'));
   var todas = Object.keys(tags).map(function (k) { return k + '=' + tags[k]; }).join('\n');
+  d.appendChild(acoes(latlng));
   linha(todas, 'white-space:pre-wrap;color:#666;font-size:11px;margin-top:6px');
   return d;
 }
@@ -115,19 +153,107 @@ function desenhar(vias) {
     n.min = Math.min(n.min, ms); n.max = Math.max(n.max, ms);
   });
   vias.forEach(function (v) {
-    var c = classificar(v.t, nomes);
-    L.polyline(v.g, { color: COR[c.tipo], weight: c.tipo === 'nao' ? 4 : 5, opacity: c.tipo === 'nao' ? .7 : .9 })
-      .bindPopup(function () { return popup(v.t, c); })
+    var c = v.c = classificar(v.t, nomes);
+    L.polyline(v.g, { color: COR[c.tipo], weight: c.tipo === 'nao' ? 4 : 5, opacity: c.tipo === 'nao' ? .7 : .9, bubblingMouseEvents: false })
+      .on('click', function (e) { L.popup().setLatLng(e.latlng).setContent(popup(v.t, c, e.latlng)).openOn(mapa); })
       .addTo(camadas[c.tipo]);
   });
+  // o grafo para traçar caminho é montado logo depois, sem travar o desenho
+  setTimeout(function () {
+    grafo = Rota.construir(vias);
+    if (calcularQuandoPronto) { calcularQuandoPronto = false; calcular(); }
+  }, 50);
 }
 
 // os dados de Jacareí vêm prontos junto com o site (vias.json): nada de esperar servidor de mapa
 aviso('Carregando…');
-fetch('vias.json')
+fetch('vias.json?v=2')
   .then(function (r) { if (!r.ok) throw new Error('erro ' + r.status); return r.json(); })
   .then(function (vias) { desenhar(vias); aviso(''); })
   .catch(function (e) { aviso('Não foi possível carregar as vias (' + String(e && e.message || e).slice(0, 40) + ')'); });
+
+
+// ---------- caminho ----------
+var grafo = null, calcularQuandoPronto = false;
+var origem = null, destino = null, pinos = { origem: null, destino: null };
+var camadaRota = L.layerGroup().addTo(mapa);
+var resumo = document.getElementById('resumo');
+var VELOCIDADE_KMH = 15;
+
+mapa.on('click', function (e) {
+  var d = document.createElement('div');
+  d.appendChild(acoes(e.latlng));
+  L.popup().setLatLng(e.latlng).setContent(d).openOn(mapa);
+});
+
+function pino(letra, cor, ll) {
+  return L.marker(ll, { icon: L.divIcon({ className: '', html: '<div class="pino" style="background:' + cor + '">' + letra + '</div>', iconSize: [28, 28], iconAnchor: [14, 14] }) });
+}
+
+function definir(tipo, lat, lon) {
+  if (tipo === 'origem') origem = { lat: lat, lon: lon }; else destino = { lat: lat, lon: lon };
+  if (pinos[tipo]) mapa.removeLayer(pinos[tipo]);
+  pinos[tipo] = pino(tipo === 'origem' ? 'A' : 'B', tipo === 'origem' ? '#1b8a3a' : '#d11f1f', [lat, lon]).addTo(mapa);
+  calcular();
+}
+
+function limpar() {
+  origem = destino = null;
+  ['origem', 'destino'].forEach(function (t) { if (pinos[t]) { mapa.removeLayer(pinos[t]); pinos[t] = null; } });
+  camadaRota.clearLayers(); resumo.textContent = '';
+}
+
+function metros(m) { return m >= 1000 ? (m / 1000).toFixed(1).replace('.', ',') + ' km' : Math.round(m / 10) * 10 + ' m'; }
+
+function calcular() {
+  var de = origem || (marcador ? { lat: marcador.getLatLng().lat, lon: marcador.getLatLng().lng } : null);
+  camadaRota.clearLayers(); resumo.textContent = '';
+  if (!destino) return;
+  if (!de) { resumo.textContent = 'Escolha de onde sair (toque no mapa em "Sair daqui") ou ligue o GPS.'; return; }
+  if (!grafo) { resumo.textContent = 'Preparando as ruas…'; calcularQuandoPronto = true; return; }
+  var a = Rota.maisPerto(grafo, de.lat, de.lon, 500), b = Rota.maisPerto(grafo, destino.lat, destino.lon, 500);
+  if (!a) { resumo.textContent = 'Não há rua permitida perto do ponto de saída.'; return; }
+  if (!b) { resumo.textContent = 'Não há rua permitida perto do destino.'; return; }
+  var r = Rota.caminho(grafo, a.no, b.no, false);
+  if (!r) r = Rota.caminho(grafo, a.no, b.no, true);
+  if (!r) { resumo.textContent = 'Não achei caminho só por vias permitidas entre esses dois pontos.'; return; }
+  L.polyline(r.pontos, { color: '#7a1fd1', weight: 7, opacity: .9, pane: 'gps', interactive: false }).addTo(camadaRota);
+  [[de, a], [destino, b]].forEach(function (x) {
+    if (x[1].dist > 15) L.polyline([[x[0].lat, x[0].lon], [grafo.lat[x[1].no], grafo.lon[x[1].no]]], { color: '#7a1fd1', weight: 3, dashArray: '4 6', pane: 'gps', interactive: false }).addTo(camadaRota);
+  });
+  var min = Math.max(1, Math.round(r.metros / 1000 / VELOCIDADE_KMH * 60));
+  var t = document.createElement('div');
+  var l1 = document.createElement('div'); l1.style.fontWeight = 'bold'; l1.textContent = metros(r.metros) + ' · cerca de ' + min + ' min a ' + VELOCIDADE_KMH + ' km/h'; t.appendChild(l1);
+  if (r.temIncerta) { var l2 = document.createElement('div'); l2.style.color = '#8a6d00'; l2.textContent = 'Passa por trecho sem velocidade marcada: confira a placa.'; t.appendChild(l2); }
+  var det = document.createElement('details'), sm = document.createElement('summary'); sm.textContent = 'Ver as ruas do caminho'; det.appendChild(sm);
+  r.trechos.forEach(function (z) { var li = document.createElement('div'); li.textContent = z.nome + ' · ' + metros(z.metros); det.appendChild(li); });
+  t.appendChild(det);
+  var lim = document.createElement('button'); lim.className = 'leve'; lim.textContent = 'Limpar'; lim.style.marginTop = '6px'; lim.addEventListener('click', limpar); t.appendChild(lim);
+  resumo.appendChild(t);
+  mapa.fitBounds(L.latLngBounds(r.pontos).extend([de.lat, de.lon]).extend([destino.lat, destino.lon]), { paddingTopLeft: [20, 170], paddingBottomRight: [20, 60] });
+}
+
+// busca de endereço (OpenStreetMap/Nominatim), só dentro de Jacareí
+var campoBusca = document.getElementById('busca'), achados = document.getElementById('achados');
+function buscar() {
+  var q = campoBusca.value.trim(); if (!q) return;
+  achados.textContent = 'Buscando…';
+  fetch('https://nominatim.openstreetmap.org/search?format=json&limit=5&countrycodes=br&bounded=1&viewbox=-46.12,-23.15,-45.80,-23.45&accept-language=pt-BR&q=' + encodeURIComponent(q))
+    .then(function (r) { if (!r.ok) throw new Error('erro ' + r.status); return r.json(); })
+    .then(function (lista) {
+      achados.textContent = '';
+      if (!lista.length) { achados.textContent = 'Não encontrei esse lugar em Jacareí.'; return; }
+      lista.forEach(function (x) {
+        var b = document.createElement('button');
+        b.textContent = x.display_name.split(',').slice(0, 3).join(',');
+        b.addEventListener('click', function () { achados.textContent = ''; definir('destino', parseFloat(x.lat), parseFloat(x.lon)); });
+        achados.appendChild(b);
+      });
+    })
+    .catch(function (e) { achados.textContent = 'Sem conexão para buscar (' + String(e && e.message || e).slice(0, 30) + ').'; });
+}
+document.getElementById('buscar').addEventListener('click', buscar);
+campoBusca.addEventListener('keydown', function (e) { if (e.key === 'Enter') buscar(); });
 
 // GPS
 var marcador = null, circulo = null, primeiraVez = true;
@@ -140,7 +266,7 @@ function posicao(p) {
     marcador.setLatLng(ll);
     circulo.setLatLng(ll).setRadius(p.coords.accuracy);
   }
-  if (primeiraVez) { primeiraVez = false; mapa.setView(ll, 16); }
+  if (primeiraVez) { primeiraVez = false; if (destino && !origem) calcular(); else mapa.setView(ll, 16); }
 }
 function iniciarGps() {
   if (!navigator.geolocation) { aviso('Este aparelho não tem GPS'); return; }
@@ -153,6 +279,7 @@ document.getElementById('gps').addEventListener('click', function () {
   else { primeiraVez = true; iniciarGps(); }
 });
 iniciarGps();
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(function () {});
 </script>
 </body>
 </html>
