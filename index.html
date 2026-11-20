@@ -500,7 +500,9 @@ function acharEstacionamento(a, dest) {
   if (!esc) return null;
   var r = Rota.caminho(grafo, a.no, esc.no, true, 'padrao', false);
   if (!r) return null;
-  return { r: r, info: { nome: esc.nome, tipo: esc.tipo, lat: grafo.lat[esc.no], lon: grafo.lon[esc.no], andar: Rota.haversine(dest.lat, dest.lon, grafo.lat[esc.no], grafo.lon[esc.no]) } };
+  var plat = grafo.lat[esc.no], plon = grafo.lon[esc.no], perto = null;
+  paraciclosLista.forEach(function (pc) { var d = Rota.haversine(plat, plon, pc.la, pc.lo); if (d <= 200 && (!perto || d < perto.dist)) perto = { nome: pc.n, dist: d }; });
+  return { r: r, info: { nome: esc.nome, tipo: esc.tipo, lat: plat, lon: plon, andar: Rota.haversine(dest.lat, dest.lon, plat, plon), paraciclo: esc.tipo === 'paraciclo' ? { nome: esc.nome, dist: 0 } : perto } };
 }
 
 function mostrarBusca(on) {
@@ -610,6 +612,14 @@ function mostrarRota(esc) {
   var env = document.createElement('button'); env.className = 'leve'; env.textContent = 'Enviar'; env.addEventListener('click', function () { compartilhar(min, r.metros); });
   var lim = document.createElement('button'); lim.className = 'leve'; lim.textContent = 'Limpar'; lim.addEventListener('click', limpar);
   linha.appendChild(ir); linha.appendChild(ruas); linha.appendChild(env); linha.appendChild(lim); t.appendChild(linha);
+  if (esc.estaciona) {
+    var ep2 = esc.estaciona, l6 = document.createElement('div'); l6.className = 'aviso-rota'; l6.style.fontWeight = 'bold'; l6.style.fontSize = '14px';
+    var andar = ' Depois siga a pé ' + metros(ep2.andar) + ' até o destino.';
+    if (ep2.paraciclo && ep2.tipo === 'paraciclo') { l6.style.color = '#1b5e20'; l6.textContent = 'Não dá para ir de autopropelido até o destino. Tem paraciclo para prender: ' + ep2.paraciclo.nome + '.' + andar; }
+    else if (ep2.paraciclo) { l6.style.color = '#1b5e20'; l6.textContent = 'Não dá para ir de autopropelido até o destino. Deixe-o perto do ponto P: tem paraciclo (' + ep2.paraciclo.nome + ') a ' + metros(ep2.paraciclo.dist) + '.' + andar; }
+    else { l6.style.color = '#b71c1c'; l6.textContent = 'Atenção: não dá para ir de autopropelido até o destino e não há paraciclo marcado no mapa perto do ponto P. Veja antes de sair onde prender o autopropelido.' + andar; }
+    t.appendChild(l6);
+  }
   if (alternativas.length > 1) {
     var mo = document.createElement('div'); mo.className = 'modos';
     alternativas.forEach(function (x) {
@@ -619,7 +629,6 @@ function mostrarRota(esc) {
     t.appendChild(mo);
   }
   if (r.temIncerta) { var l2 = document.createElement('div'); l2.className = 'aviso-rota'; l2.textContent = 'Passa por trecho sem velocidade marcada: confira a placa.'; t.appendChild(l2); }
-  if (esc.estaciona) { var l6 = document.createElement('div'); l6.className = 'aviso-rota'; l6.style.color = '#1565c0'; l6.textContent = 'Não dá para chegar de autopropelido até o destino. Deixe-o ' + (esc.estaciona.tipo === 'paraciclo' ? 'no paraciclo (' + esc.estaciona.nome + ')' : 'no ponto permitido mais perto') + ' e siga a pé ' + metros(esc.estaciona.andar) + '.'; t.appendChild(l6); }
   if (r.proibido > 20) { var l4 = document.createElement('div'); l4.className = 'aviso-rota'; l4.style.color = '#b71c1c'; l4.textContent = 'Não achei caminho só por ruas permitidas. Este é o mais curto e passa por ' + metros(r.proibido) + ' de via onde autopropelido não pode (em vermelho tracejado).'; t.appendChild(l4); }
   var pisoTxt = textoPiso(r.pedra, r.terra);
   if (pisoTxt) { var l3 = document.createElement('div'); l3.className = 'aviso-rota'; l3.textContent = pisoTxt; t.appendChild(l3); }
