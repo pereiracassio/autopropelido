@@ -26,7 +26,13 @@ def salvar():
         subprocess.run("git add lugares.json && git commit -q -m 'lugares: %d' && (git push -q || (git pull -q --rebase -X theirs && git push -q))" % len(lugares), shell=True)
 
 
-NL = NC = 4
+NL, NC = int(os.environ.get('GRADE_L', '4')), int(os.environ.get('GRADE_C', '4'))
+REGIAO = os.environ.get('REGIAO')
+if REGIAO:
+    S, W, N, E = [float(x) for x in REGIAO.split(',')]
+    if os.path.exists('lugares.json'):
+        lugares = json.load(open('lugares.json', encoding='utf-8'))
+        vistos = set(('x', i) for i in range(0))  # ids antigos não são guardados; repetidos são tirados abaixo
 for a in range(NL):
     for b in range(NC):
         s = S + (N - S) * a / NL

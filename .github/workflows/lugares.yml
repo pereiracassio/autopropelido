@@ -2,9 +2,6 @@ name: Atualizar lugares de Jacareí
 
 on:
   workflow_dispatch:
-  push:
-    branches: [claude/jolly-davinci-8uissp]
-    paths: [scripts/baixar-lugares.py]
   schedule:
     - cron: '0 7 1 * *'
 
