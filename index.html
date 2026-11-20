@@ -20,16 +20,19 @@
   html, body { margin: 0; height: 100%; font-family: system-ui, sans-serif; }
   #mapa { position: absolute; inset: 0; }
   #legenda {
-    position: absolute; z-index: 1000; left: 12px; bottom: 24px;
+    display: none;
+    position: absolute; z-index: 1000; left: 12px; bottom: 80px;
     background: #fff; padding: 10px 12px; border-radius: 8px;
     box-shadow: 0 1px 6px rgba(0,0,0,.35); font-size: 14px; line-height: 1.7;
   }
   #legenda i { display: inline-block; width: 26px; height: 5px; border-radius: 3px; margin-right: 8px; vertical-align: middle; }
-  #gps {
-    position: absolute; z-index: 1000; right: 12px; bottom: 24px;
-    background: #fff; border: 0; padding: 12px 14px; border-radius: 8px;
-    box-shadow: 0 1px 6px rgba(0,0,0,.35); font-size: 15px;
+  #gps, #btn-legenda {
+    position: absolute; z-index: 1000; bottom: 24px; width: 48px; height: 48px; padding: 0;
+    background: #fff; border: 0; border-radius: 8px; box-shadow: 0 1px 6px rgba(0,0,0,.35);
+    display: flex; align-items: center; justify-content: center;
   }
+  #gps { right: 12px; }
+  #btn-legenda { left: 12px; }
   #painel {
     position: absolute; z-index: 1000; top: 12px; left: 56px; right: 12px; max-width: 440px;
     background: #fff; border-radius: 8px; box-shadow: 0 1px 6px rgba(0,0,0,.35); padding: 8px; font-size: 14px;
@@ -65,7 +68,12 @@
   <div><i style="background:#d4a900"></i>Sem velocidade marcada (veja a placa)</div>
   <div><i style="background:#d11f1f"></i>Não pode (mais de 40)</div>
 </div>
-<button id="gps">Minha localização</button>
+<button id="btn-legenda" aria-label="Mostrar ou esconder o que cada cor significa">
+  <svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke-width="3.5" stroke-linecap="round"><path d="M4 5h18" stroke="#1b8a3a"/><path d="M4 11h18" stroke="#1f6fd1"/><path d="M4 17h18" stroke="#d4a900"/><path d="M4 23h18" stroke="#d11f1f"/></svg>
+</button>
+<button id="gps" aria-label="Ir para a minha localização">
+  <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#7a1fd1" stroke-width="2.6" stroke-linecap="round"><circle cx="14" cy="14" r="7"/><circle cx="14" cy="14" r="2.5" fill="#7a1fd1"/><path d="M14 2v4M14 22v4M2 14h4M22 14h4"/></svg>
+</button>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="rota.js?v=1"></script>
@@ -290,7 +298,7 @@ function buscar() {
     return fetch('https://nominatim.openstreetmap.org/search?format=json&limit=5&countrycodes=br&bounded=1&viewbox=-46.12,-23.15,-45.80,-23.45&accept-language=pt-BR&q=' + encodeURIComponent(q))
       .then(function (r) { if (!r.ok) throw new Error('erro ' + r.status); return r.json(); })
       .then(function (lista) {
-        var extras = lista.filter(function (x) { return /Jacare[ií]/.test(x.display_name) && !/S[ãa]o Jos[ée] dos Campos/.test(x.display_name); }).map(function (x) { return { nome: x.display_name.split(',').slice(0, 3).join(','), tipo: '', lat: parseFloat(x.lat), lon: parseFloat(x.lon), dist: null }; });
+        var extras = lista.map(function (x) { return { nome: x.display_name.split(',').slice(0, 3).join(','), tipo: '', lat: parseFloat(x.lat), lon: parseFloat(x.lon), dist: null }; });
         var todos = locais.concat(extras);
         if (!todos.length) achados.textContent = 'Não encontrei esse lugar em Jacareí.'; else mostrarAchados(todos);
       })
@@ -319,6 +327,9 @@ function iniciarGps() {
     function () { aviso('Permita o acesso à localização'); },
     { enableHighAccuracy: true, maximumAge: 5000 });
 }
+document.getElementById('btn-legenda').addEventListener('click', function () {
+  var l = document.getElementById('legenda'); l.style.display = l.style.display === 'block' ? 'none' : 'block';
+});
 document.getElementById('gps').addEventListener('click', function () {
   if (marcador) mapa.setView(marcador.getLatLng(), 16);
   else { primeiraVez = true; iniciarGps(); }
