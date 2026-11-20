@@ -154,7 +154,15 @@ function classificar(tags, nomes) {
   return { tipo: 'nao', motivo: 'Sem velocidade marcada. Via de trânsito rápido: 80 km/h pelo CTB.' };
 }
 
-function acoes(latlng) {
+function linkOsm(lat, lon, wayId) {
+  var d = document.createElement('div');
+  var a = document.createElement('a'); a.textContent = 'Corrigir no OpenStreetMap'; a.target = '_blank'; a.rel = 'noopener';
+  a.href = 'https://www.openstreetmap.org/edit?editor=id' + (wayId ? '&way=' + wayId : '') + '#map=19/' + lat.toFixed(5) + '/' + lon.toFixed(5);
+  a.style.cssText = 'display:inline-block;margin-top:8px;font-size:13px;color:#1565c0';
+  d.appendChild(a); return d;
+}
+
+function acoes(latlng, wayId) {
   var d = document.createElement('div');
   [['Sair daqui', 'origem'], ['Ir até aqui', 'destino'], ['Salvar lugar aqui', 'salvar']].forEach(function (a) {
     var b = document.createElement('button'); b.className = 'acao'; b.textContent = a[0];
@@ -164,6 +172,7 @@ function acoes(latlng) {
     });
     d.appendChild(b);
   });
+  d.appendChild(linkOsm(latlng.lat, latlng.lng, wayId));
   return d;
 }
 
@@ -229,6 +238,7 @@ function abrirServico(sv) {
   linha(g['addr:street'] && (g['addr:street'] + (g['addr:housenumber'] ? ', ' + g['addr:housenumber'] : '')));
   var ir = document.createElement('button'); ir.className = 'acao'; ir.textContent = 'Ir até aqui';
   ir.addEventListener('click', function () { mapa.closePopup(); definir('destino', sv.la, sv.lo, sv.n); }); d.appendChild(ir);
+  d.appendChild(linkOsm(sv.la, sv.lo));
   L.popup().setLatLng([sv.la, sv.lo]).setContent(d).openOn(mapa);
 }
 
@@ -276,7 +286,7 @@ function nomePiso(sf) {
   return { asphalt: 'asfalto', concrete: 'concreto', 'concrete:plates': 'placas de concreto', paved: 'pavimentado' }[sf] || sf;
 }
 
-function popup(tags, c, latlng) {
+function popup(tags, c, latlng, wayId) {
   var d = document.createElement('div');
   d.style.cssText = 'font-size:13px;line-height:1.5;max-width:240px';
   function linha(txt, estilo) { var p = document.createElement('div'); p.textContent = txt; if (estilo) p.style.cssText = estilo; d.appendChild(p); }
@@ -289,7 +299,7 @@ function popup(tags, c, latlng) {
   if (tags.lit) linha('Iluminação: ' + (tags.lit === 'yes' ? 'sim' : tags.lit === 'no' ? 'não' : tags.lit));
   if (tags.oneway === 'yes') linha('Mão única');
   var todas = Object.keys(tags).map(function (k) { return k + '=' + tags[k]; }).join('\n');
-  d.appendChild(acoes(latlng));
+  d.appendChild(acoes(latlng, wayId));
   linha(todas, 'white-space:pre-wrap;color:#666;font-size:11px;margin-top:6px');
   return d;
 }
@@ -306,7 +316,7 @@ function desenhar(vias) {
   vias.forEach(function (v) {
     var c = v.c = classificar(v.t, nomes);
     L.polyline(v.g, { color: COR[c.tipo], weight: c.tipo === 'nao' ? 3 : 4, opacity: c.tipo === 'nao' ? .55 : .7, dashArray: c.tipo === 'incerta' ? '10 8' : null, bubblingMouseEvents: false })
-      .on('click', function (e) { L.popup().setLatLng(e.latlng).setContent(popup(v.t, c, e.latlng)).openOn(mapa); })
+      .on('click', function (e) { L.popup().setLatLng(e.latlng).setContent(popup(v.t, c, e.latlng, v.i)).openOn(mapa); })
       .addTo(camadas[c.tipo]);
   });
   // o grafo para traçar caminho é montado logo depois, sem travar o desenho
