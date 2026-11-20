@@ -639,7 +639,7 @@ function atualizarGuia(ll, precisao) {
   if (!pr) return;
   if (pr.dist > 40 && precisao < 60) {
     foraConta++;
-    if (foraConta >= 2) { foraConta = 0; aviso('Recalculando…'); setTimeout(function () { aviso(''); }, 2000); calcular({ guia: true }); return; }
+    if (foraConta >= 2) { foraConta = 0; aviso('Recalculando…'); falar('Recalculando'); setTimeout(function () { aviso(''); }, 2000); calcular({ guia: true }); return; }
   } else foraConta = 0;
   progresso = pr.seg;
   if (linhaRota) linhaRota.setLatLngs([[pr.lat, pr.lon]].concat(rotaAtual.pts.slice(pr.seg + 1)));
