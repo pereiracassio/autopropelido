@@ -1,0 +1,28 @@
+name: Atualizar lugares de Jacareí
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [claude/jolly-davinci-8uissp]
+    paths: [scripts/baixar-lugares.py]
+  schedule:
+    - cron: '0 7 1 * *'
+
+permissions:
+  contents: write
+
+jobs:
+  baixar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Baixar os lugares
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          python3 scripts/baixar-lugares.py
+          git add lugares.json
+          git diff --cached --quiet && exit 0
+          git commit -q -m "Atualiza os lugares de Jacareí"
+          git push || (git pull -q --rebase -X theirs && git push)
