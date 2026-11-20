@@ -108,7 +108,7 @@ var JACAREI = [-23.3053, -45.9658];
 var COR = { ciclovia: '#0d6b2e', ciclofaixa: '#6fd17a', via40: '#1f6fd1', incerta: '#d4a900', nao: '#d11f1f' };
 var NOME = { ciclovia: 'Pode: ciclovia', ciclofaixa: 'Pode: ciclofaixa', via40: 'Pode: rua de até 40 km/h', incerta: 'Velocidade não marcada: confira a placa', nao: 'Não pode: mais de 40 km/h' };
 
-var mapa = L.map('mapa', { zoomSnap: 0.25, zoomControl: true, attributionControl: false, renderer: L.canvas({ tolerance: 8 }) }).setView(JACAREI, 15);
+var mapa = L.map('mapa', { zoomSnap: 0.25, zoomControl: true, attributionControl: false, renderer: L.canvas({ tolerance: 8 }) }).setView((function () { try { var u = JSON.parse(localStorage.getItem('autoprop-ultima') || 'null'); if (u && u.length === 2) return u; } catch (e) {} return JACAREI; })(), 15);
 mapa.createPane('gps').style.zIndex = 650;
 // fundo do mapa: OpenStreetMap (as linhas ficam finas e translúcidas para dar para ler o nome das ruas)
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap' }).addTo(mapa);
@@ -342,6 +342,7 @@ function pino(letra, cor, ll) {
 
 var destinoNome = null;
 function definir(tipo, lat, lon, nome) {
+  if (tipo === 'destino' && !origem && !gpsIniciado) iniciarGps();
   if (tipo === 'origem') origem = { lat: lat, lon: lon }; else { destino = { lat: lat, lon: lon }; destinoNome = nome || null; }
   if (pinos[tipo]) mapa.removeLayer(pinos[tipo]);
   pinos[tipo] = pino(tipo === 'origem' ? 'A' : 'B', tipo === 'origem' ? '#1b8a3a' : '#d11f1f', [lat, lon]).addTo(mapa);
@@ -742,6 +743,7 @@ var marcador = null, circulo = null, primeiraVez = true;
 function posicao(p) {
   var ll = [p.coords.latitude, p.coords.longitude];
   ultimoLL = ll;
+  try { localStorage.setItem('autoprop-ultima', JSON.stringify(ll)); } catch (e) {}
   if (p.coords.speed > 1.2 && typeof p.coords.heading === 'number' && !isNaN(p.coords.heading)) definirRumo(p.coords.heading, 'gps');
   if (guiando) {
     if (!seta) seta = L.marker(ll, { icon: L.divIcon({ className: '', html: '<svg id="seta" width="36" height="36" viewBox="0 0 36 36"><path d="M18 3 L28 30 L18 24 L8 30 Z" fill="#7a1fd1" stroke="#fff" stroke-width="2"/></svg>', iconSize: [36, 36], iconAnchor: [18, 18] }), interactive: false, keyboard: false }).addTo(mapa);
@@ -774,7 +776,10 @@ document.getElementById('gps').addEventListener('click', function () {
   if (marcador) mapa.setView(marcador.getLatLng(), 16);
   else { primeiraVez = true; iniciarGps(); }
 });
-iniciarGps();
+// o GPS só é pedido quando precisa (mira, caminho, guia); se a permissão já foi dada, liga sozinho sem perguntar nada
+try {
+  if (navigator.permissions && navigator.permissions.query) navigator.permissions.query({ name: 'geolocation' }).then(function (r) { if (r.state === 'granted') iniciarGps(); }).catch(function () {});
+} catch (e) {}
 desenharMeus(); renderAtalhos(); mostrarBusca(true);
 (function () {
   try {
