@@ -33,105 +33,109 @@
   <div><i style="background:#1b8a3a"></i>Ciclovia</div>
   <div><i style="background:#f08a00"></i>Ciclofaixa</div>
   <div><i style="background:#1f6fd1"></i>Rua de até 40 km/h</div>
+  <div><i style="background:#d4a900"></i>Sem velocidade marcada (veja a placa)</div>
+  <div><i style="background:#d11f1f"></i>Não pode (mais de 40)</div>
 </div>
 <button id="gps">Minha localização</button>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 var JACAREI = [-23.3053, -45.9658];
-var ZOOM_MIN = 14;
-var ENDPOINTS = [
-  'https://overpass-api.de/api/interpreter',
-  'https://overpass.kumi.systems/api/interpreter'
-];
-var COR = { ciclovia: '#1b8a3a', ciclofaixa: '#f08a00', via40: '#1f6fd1' };
+var COR = { ciclovia: '#1b8a3a', ciclofaixa: '#f08a00', via40: '#1f6fd1', incerta: '#d4a900', nao: '#d11f1f' };
+var NOME = { ciclovia: 'Pode: ciclovia', ciclofaixa: 'Pode: ciclofaixa', via40: 'Pode: rua de até 40 km/h', incerta: 'Velocidade não marcada: confira a placa', nao: 'Não pode: mais de 40 km/h' };
 
-var mapa = L.map('mapa', { zoomControl: true }).setView(JACAREI, 15);
+var mapa = L.map('mapa', { zoomControl: true, preferCanvas: true }).setView(JACAREI, 15);
+mapa.createPane('gps').style.zIndex = 650;
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 19,
   attribution: '&copy; OpenStreetMap'
 }).addTo(mapa);
 
-var camada = L.layerGroup().addTo(mapa);
+// uma camada por tipo, na ordem em que são desenhadas (a última fica por cima)
+var camadas = {};
+['nao', 'incerta', 'via40', 'ciclofaixa', 'ciclovia'].forEach(function (t) { camadas[t] = L.layerGroup().addTo(mapa); });
 var msg = document.getElementById('msg');
 function aviso(t) { msg.textContent = t; msg.style.display = t ? 'block' : 'none'; }
 
-function classificar(tags) {
-  var hw = tags.highway;
-  if (hw === 'cycleway') return 'ciclovia';
+function velocidade(v) {
+  var m = /^\s*(\d+)/.exec(v || '');
+  return m ? parseInt(m[1], 10) : null;
+}
+
+// devolve { tipo, motivo }
+function classificar(tags, nomes) {
+  var hw = tags.highway || '';
+  if (hw === 'cycleway') return { tipo: 'ciclovia', motivo: 'Marcada no mapa como ciclovia.' };
+  if (/^(path|footway|pedestrian|track)$/.test(hw)) return { tipo: 'ciclovia', motivo: 'Caminho marcado no mapa como próprio para bicicleta.' };
   var lados = [tags.cycleway, tags['cycleway:left'], tags['cycleway:right'], tags['cycleway:both']];
-  var ciclofaixa = false, ciclovia = false;
-  lados.forEach(function (v) {
-    if (v === 'track') ciclovia = true;
-    if (v === 'lane') ciclofaixa = true;
-  });
-  if (ciclovia) return 'ciclovia';
-  if (ciclofaixa) return 'ciclofaixa';
-  // CTB art. 61: sem placa, via local = 30 km/h e coletora = 40 km/h
-  var ms = parseInt(tags.maxspeed, 10);
-  if (!isNaN(ms)) return ms <= 40 ? 'via40' : null;
-  if (/^(residential|living_street|unclassified|tertiary)$/.test(hw)) return 'via40';
-  return null;
-}
-
-var ultimaBusca = 0;
-function carregar() {
-  if (mapa.getZoom() < ZOOM_MIN) { aviso('Aproxime o mapa para ver as vias'); return; }
-  aviso('');
-  var b = mapa.getBounds();
-  var bbox = [b.getSouth(), b.getWest(), b.getNorth(), b.getEast()].join(',');
-  var vias = 'residential|living_street|tertiary|unclassified|secondary|primary|service|trunk';
-  var q = '[out:json][timeout:25];(' +
-    'way["highway"="cycleway"](' + bbox + ');' +
-    'way["highway"~"^(' + vias + ')$"]["cycleway"~"^(lane|track)$"](' + bbox + ');' +
-    'way["highway"~"^(' + vias + ')$"]["cycleway:left"~"^(lane|track)$"](' + bbox + ');' +
-    'way["highway"~"^(' + vias + ')$"]["cycleway:right"~"^(lane|track)$"](' + bbox + ');' +
-    'way["highway"~"^(' + vias + ')$"]["cycleway:both"~"^(lane|track)$"](' + bbox + ');' +
-    'way["highway"~"^(residential|living_street|unclassified|tertiary)$"](' + bbox + ');' +
-    'way["highway"~"^(' + vias + ')$"]["maxspeed"~"^(10|15|20|30|40)$"](' + bbox + ');' +
-    ');out geom;';
-  var id = ++ultimaBusca;
-
-  function tentar(i) {
-    if (i >= ENDPOINTS.length) { aviso('Sem conexão com o mapa'); return; }
-    fetch(ENDPOINTS[i], { method: 'POST', body: 'data=' + encodeURIComponent(q),
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
-      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
-      .then(function (j) { if (id === ultimaBusca) desenhar(j.elements || []); })
-      .catch(function () { tentar(i + 1); });
+  var track = lados.indexOf('track') >= 0, lane = lados.indexOf('lane') >= 0;
+  if (track) return { tipo: 'ciclovia', motivo: 'Tem ciclovia ao lado da rua (cycleway=track).' };
+  if (lane) return { tipo: 'ciclofaixa', motivo: 'Tem ciclofaixa na rua (cycleway=lane).' };
+  var base = hw.replace(/_link$/, '');
+  var ms = velocidade(tags.maxspeed);
+  if (ms !== null) {
+    return ms <= 40
+      ? { tipo: 'via40', motivo: 'Velocidade marcada no mapa: ' + ms + ' km/h.' }
+      : { tipo: 'nao', motivo: 'Velocidade marcada no mapa: ' + ms + ' km/h (acima de 40).' };
   }
-  tentar(0);
+  // sem velocidade marcada neste trecho: olha os outros trechos da mesma rua
+  var n = nomes && tags.name && nomes[tags.name];
+  if (n) {
+    if (n.max <= 40) return { tipo: 'via40', motivo: 'Sem velocidade marcada neste trecho, mas os outros trechos da mesma rua estão marcados com ' + n.max + ' km/h.' };
+    if (n.min > 40) return { tipo: 'nao', motivo: 'Sem velocidade marcada neste trecho, mas os outros trechos da mesma rua estão marcados com ' + n.min + ' km/h.' };
+  }
+  // sem nenhuma marcação: vale o CTB, art. 61, nas ruas que são claramente locais ou coletoras
+  if (/^(residential|living_street|unclassified)$/.test(base)) return { tipo: 'via40', motivo: 'Sem velocidade marcada. Via local: 30 km/h pelo CTB.' };
+  if (base === 'tertiary') return { tipo: 'via40', motivo: 'Sem velocidade marcada. Via coletora: 40 km/h pelo CTB.' };
+  if (/^(secondary|primary)$/.test(base)) return { tipo: 'incerta', motivo: 'Sem velocidade marcada. Pode ser coletora (40 km/h) ou arterial (60 km/h): vale a placa da rua.' };
+  return { tipo: 'nao', motivo: 'Sem velocidade marcada. Via de trânsito rápido: 80 km/h pelo CTB.' };
 }
 
-function desenhar(elementos) {
-  camada.clearLayers();
-  // vias de 40 km/h por baixo, ciclofaixa e ciclovia por cima
-  var ordem = { via40: 0, ciclofaixa: 1, ciclovia: 2 };
-  var itens = [];
-  elementos.forEach(function (e) {
-    if (!e.geometry || !e.tags) return;
-    var tipo = classificar(e.tags);
-    if (!tipo) return;
-    itens.push({ tipo: tipo, pts: e.geometry.map(function (p) { return [p.lat, p.lon]; }), tags: e.tags });
+function popup(tags, c) {
+  var d = document.createElement('div');
+  d.style.cssText = 'font-size:13px;line-height:1.5;max-width:240px';
+  function linha(txt, estilo) { var p = document.createElement('div'); p.textContent = txt; if (estilo) p.style.cssText = estilo; d.appendChild(p); }
+  linha(tags.name || 'Sem nome', 'font-weight:bold;font-size:14px');
+  linha(NOME[c.tipo], 'color:' + COR[c.tipo] + ';font-weight:bold');
+  linha(c.motivo);
+  linha('Tipo no mapa: ' + (tags.highway || '-'));
+  linha('Velocidade marcada: ' + (tags.maxspeed || 'não marcada'));
+  var todas = Object.keys(tags).map(function (k) { return k + '=' + tags[k]; }).join('\n');
+  linha(todas, 'white-space:pre-wrap;color:#666;font-size:11px;margin-top:6px');
+  return d;
+}
+
+function desenhar(vias) {
+  // velocidades marcadas em cada rua (por nome), para valer nos trechos sem marcação
+  var nomes = {};
+  vias.forEach(function (v) {
+    var ms = velocidade(v.t.maxspeed);
+    if (ms === null || !v.t.name) return;
+    var n = nomes[v.t.name] || (nomes[v.t.name] = { min: ms, max: ms });
+    n.min = Math.min(n.min, ms); n.max = Math.max(n.max, ms);
   });
-  itens.sort(function (a, b) { return ordem[a.tipo] - ordem[b.tipo]; });
-  itens.forEach(function (it) {
-    L.polyline(it.pts, { color: COR[it.tipo], weight: it.tipo === 'via40' ? 4 : 5, opacity: .85 })
-      .bindTooltip(it.tags.name || '', { sticky: true })
-      .addTo(camada);
+  vias.forEach(function (v) {
+    var c = classificar(v.t, nomes);
+    L.polyline(v.g, { color: COR[c.tipo], weight: c.tipo === 'nao' ? 4 : 5, opacity: c.tipo === 'nao' ? .7 : .9 })
+      .bindPopup(function () { return popup(v.t, c); })
+      .addTo(camadas[c.tipo]);
   });
 }
 
-mapa.on('moveend', carregar);
-carregar();
+// os dados de Jacareí vêm prontos junto com o site (vias.json): nada de esperar servidor de mapa
+aviso('Carregando…');
+fetch('vias.json')
+  .then(function (r) { if (!r.ok) throw new Error('erro ' + r.status); return r.json(); })
+  .then(function (vias) { desenhar(vias); aviso(''); })
+  .catch(function (e) { aviso('Não foi possível carregar as vias (' + String(e && e.message || e).slice(0, 40) + ')'); });
 
 // GPS
 var marcador = null, circulo = null, primeiraVez = true;
 function posicao(p) {
   var ll = [p.coords.latitude, p.coords.longitude];
   if (!marcador) {
-    marcador = L.circleMarker(ll, { radius: 8, color: '#fff', weight: 3, fillColor: '#d11f1f', fillOpacity: 1 }).addTo(mapa);
-    circulo = L.circle(ll, { radius: p.coords.accuracy, color: '#d11f1f', weight: 1, fillOpacity: .08 }).addTo(mapa);
+    circulo = L.circle(ll, { radius: p.coords.accuracy, color: '#d11f1f', weight: 1, fillOpacity: .08, pane: 'gps', interactive: false }).addTo(mapa);
+    marcador = L.circleMarker(ll, { radius: 8, color: '#fff', weight: 3, fillColor: '#7a1fd1', fillOpacity: 1, pane: 'gps', interactive: false }).addTo(mapa);
   } else {
     marcador.setLatLng(ll);
     circulo.setLatLng(ll).setRadius(p.coords.accuracy);
