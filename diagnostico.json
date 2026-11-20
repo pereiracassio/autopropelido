@@ -1,0 +1,5211 @@
+[
+{
+"tipo": "way",
+"id": 204736791,
+"centro": {
+"lat": -23.2962171,
+"lon": -45.9734293
+},
+"tags": {
+"highway": "service",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 204736851,
+"centro": {
+"lat": -23.2951027,
+"lon": -45.9788942
+},
+"tags": {
+"highway": "service",
+"service": "alley"
+}
+},
+{
+"tipo": "way",
+"id": 204737216,
+"centro": {
+"lat": -23.2977549,
+"lon": -45.9545438
+},
+"tags": {
+"highway": "pedestrian",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 204737304,
+"centro": {
+"lat": -23.2986401,
+"lon": -45.9647798
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 321375676,
+"centro": {
+"lat": -23.2776864,
+"lon": -45.9540241
+},
+"tags": {
+"highway": "service",
+"oneway": "yes",
+"service": "driveway",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 321375677,
+"centro": {
+"lat": -23.2771618,
+"lon": -45.9543359
+},
+"tags": {
+"highway": "service",
+"oneway": "no",
+"service": "driveway"
+}
+},
+{
+"tipo": "way",
+"id": 321375678,
+"centro": {
+"lat": -23.2772623,
+"lon": -45.9543276
+},
+"tags": {
+"highway": "service",
+"oneway": "yes",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 321855965,
+"centro": {
+"lat": -23.2779665,
+"lon": -45.954232
+},
+"tags": {
+"highway": "service",
+"oneway": "yes",
+"service": "parking_aisle",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 321855966,
+"centro": {
+"lat": -23.2773373,
+"lon": -45.9544787
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 321855967,
+"centro": {
+"lat": -23.2771556,
+"lon": -45.9540551
+},
+"tags": {
+"highway": "service",
+"service": "driveway",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 380451931,
+"centro": {
+"lat": -23.2892298,
+"lon": -45.9657999
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 380451932,
+"centro": {
+"lat": -23.2892551,
+"lon": -45.9674199
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 380451933,
+"centro": {
+"lat": -23.2888368,
+"lon": -45.9675112
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 380451934,
+"centro": {
+"lat": -23.2888727,
+"lon": -45.9677698
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 380451935,
+"centro": {
+"lat": -23.2890842,
+"lon": -45.967196
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 380451936,
+"centro": {
+"lat": -23.2893366,
+"lon": -45.9668761
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 380451937,
+"centro": {
+"lat": -23.2894917,
+"lon": -45.9664366
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 380451938,
+"centro": {
+"lat": -23.2888866,
+"lon": -45.965766
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 380451939,
+"centro": {
+"lat": -23.2897507,
+"lon": -45.9661215
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 380451940,
+"centro": {
+"lat": -23.2903319,
+"lon": -45.9670649
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 380451941,
+"centro": {
+"lat": -23.289112,
+"lon": -45.9687884
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 380451942,
+"centro": {
+"lat": -23.2867254,
+"lon": -45.9676346
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 380451943,
+"centro": {
+"lat": -23.2897406,
+"lon": -45.9653555
+},
+"tags": {
+"highway": "service",
+"oneway": "yes",
+"service": "driveway",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 380451944,
+"centro": {
+"lat": -23.2898213,
+"lon": -45.9654304
+},
+"tags": {
+"highway": "service",
+"oneway": "yes",
+"service": "driveway",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 397905525,
+"centro": {
+"lat": -23.2787816,
+"lon": -45.9533519
+},
+"tags": {
+"highway": "service",
+"oneway": "yes",
+"service": "driveway",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 397905526,
+"centro": {
+"lat": -23.2790217,
+"lon": -45.9533572
+},
+"tags": {
+"highway": "service",
+"oneway": "yes",
+"service": "driveway",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 397911376,
+"centro": {
+"lat": -23.2749091,
+"lon": -45.9737599
+},
+"tags": {
+"highway": "footway",
+"surface": "concrete"
+}
+},
+{
+"tipo": "way",
+"id": 397911378,
+"centro": {
+"lat": -23.2747697,
+"lon": -45.9739118
+},
+"tags": {
+"bridge": "yes",
+"highway": "footway",
+"layer": "1",
+"surface": "concrete"
+}
+},
+{
+"tipo": "way",
+"id": 472609003,
+"centro": {
+"lat": -23.2923548,
+"lon": -45.9698731
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 537794897,
+"centro": {
+"lat": -23.2975804,
+"lon": -45.9842629
+},
+"tags": {
+"highway": "service",
+"service": "driveway"
+}
+},
+{
+"tipo": "way",
+"id": 537794898,
+"centro": {
+"lat": -23.2970677,
+"lon": -45.984847
+},
+"tags": {
+"highway": "service",
+"service": "driveway"
+}
+},
+{
+"tipo": "way",
+"id": 537794899,
+"centro": {
+"lat": -23.2971005,
+"lon": -45.9849174
+},
+"tags": {
+"highway": "service",
+"service": "driveway"
+}
+},
+{
+"tipo": "way",
+"id": 537799822,
+"centro": {
+"lat": -23.2991979,
+"lon": -45.9723451
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 537799823,
+"centro": {
+"lat": -23.2986696,
+"lon": -45.9727125
+},
+"tags": {
+"highway": "service",
+"service": "driveway"
+}
+},
+{
+"tipo": "way",
+"id": 537799829,
+"centro": {
+"lat": -23.2898301,
+"lon": -45.9677316
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 537799836,
+"centro": {
+"lat": -23.2882528,
+"lon": -45.964385
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 537799841,
+"centro": {
+"lat": -23.2861623,
+"lon": -45.963867
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 537799843,
+"centro": {
+"lat": -23.2869825,
+"lon": -45.9655348
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 537799845,
+"centro": {
+"lat": -23.2871352,
+"lon": -45.965555
+},
+"tags": {
+"highway": "service",
+"service": "driveway",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 537799846,
+"centro": {
+"lat": -23.2878254,
+"lon": -45.9680411
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 537799854,
+"centro": {
+"lat": -23.2809367,
+"lon": -45.9690165
+},
+"tags": {
+"fixme": "Via sem nome, utilizado ETE Central como referência.",
+"highway": "service",
+"name": "Rua da Ete Central"
+}
+},
+{
+"tipo": "way",
+"id": 537799858,
+"centro": {
+"lat": -23.2764491,
+"lon": -45.9571687
+},
+"tags": {
+"access": "private",
+"highway": "service",
+"service": "driveway",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 537799866,
+"centro": {
+"lat": -23.2754985,
+"lon": -45.9572115
+},
+"tags": {
+"access": "private",
+"highway": "service",
+"service": "driveway",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 537799868,
+"centro": {
+"lat": -23.2754762,
+"lon": -45.9572139
+},
+"tags": {
+"access": "private",
+"highway": "service",
+"service": "parking_aisle",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 537799870,
+"centro": {
+"lat": -23.2748256,
+"lon": -45.9561327
+},
+"tags": {
+"access": "private",
+"highway": "service",
+"service": "driveway",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 537799871,
+"centro": {
+"lat": -23.2757493,
+"lon": -45.9556806
+},
+"tags": {
+"access": "private",
+"highway": "service",
+"oneway": "yes",
+"service": "driveway",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 537799873,
+"centro": {
+"lat": -23.2756631,
+"lon": -45.955697
+},
+"tags": {
+"access": "private",
+"highway": "service",
+"oneway": "yes",
+"service": "driveway",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 537799875,
+"centro": {
+"lat": -23.2755931,
+"lon": -45.9558234
+},
+"tags": {
+"access": "private",
+"highway": "service",
+"service": "driveway",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 537803569,
+"centro": {
+"lat": -23.271118,
+"lon": -45.9495909
+},
+"tags": {
+"access": "private",
+"highway": "service",
+"service": "parking_aisle",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 546225082,
+"centro": {
+"lat": -23.3003018,
+"lon": -45.9652889
+},
+"tags": {
+"highway": "footway",
+"surface": "concrete"
+}
+},
+{
+"tipo": "way",
+"id": 546225084,
+"centro": {
+"lat": -23.2993795,
+"lon": -45.9640389
+},
+"tags": {
+"highway": "footway"
+}
+},
+{
+"tipo": "way",
+"id": 546225085,
+"centro": {
+"lat": -23.2999996,
+"lon": -45.9645446
+},
+"tags": {
+"highway": "footway"
+}
+},
+{
+"tipo": "way",
+"id": 585208085,
+"centro": {
+"lat": -23.2948028,
+"lon": -45.9739423
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 585208095,
+"centro": {
+"lat": -23.2958147,
+"lon": -45.9730316
+},
+"tags": {
+"highway": "service",
+"service": "driveway"
+}
+},
+{
+"tipo": "way",
+"id": 605201808,
+"centro": {
+"lat": -23.2871189,
+"lon": -45.9559714
+},
+"tags": {
+"highway": "service",
+"name": "ADC Gates",
+"service": "parking_aisle",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 605201811,
+"centro": {
+"lat": -23.2855383,
+"lon": -45.9550939
+},
+"tags": {
+"highway": "service",
+"service": "driveway",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 605201813,
+"centro": {
+"lat": -23.2864607,
+"lon": -45.9550324
+},
+"tags": {
+"highway": "service",
+"service": "driveway",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 605201814,
+"centro": {
+"lat": -23.2870243,
+"lon": -45.9571002
+},
+"tags": {
+"highway": "path"
+}
+},
+{
+"tipo": "way",
+"id": 605296820,
+"centro": {
+"lat": -23.2794906,
+"lon": -45.9725068
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 670246676,
+"centro": {
+"lat": -23.2732473,
+"lon": -45.9709553
+},
+"tags": {
+"highway": "service",
+"lanes": "1",
+"lit": "yes",
+"maxspeed": "40",
+"oneway": "yes",
+"service": "driveway",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 670246678,
+"centro": {
+"lat": -23.274569,
+"lon": -45.9690992
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 670246680,
+"centro": {
+"lat": -23.2736408,
+"lon": -45.971067
+},
+"tags": {
+"highway": "service",
+"oneway": "yes",
+"service": "parking_aisle",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 670246682,
+"centro": {
+"lat": -23.2747778,
+"lon": -45.9719314
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 676660196,
+"centro": {
+"lat": -23.3022961,
+"lon": -45.9657818
+},
+"tags": {
+"highway": "cycleway",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 730684593,
+"centro": {
+"lat": -23.2957724,
+"lon": -45.9619585
+},
+"tags": {
+"highway": "cycleway",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 760197691,
+"centro": {
+"lat": -23.2897365,
+"lon": -45.9535456
+},
+"tags": {
+"covered": "no",
+"highway": "service",
+"horse": "no",
+"oneway": "yes",
+"service": "estacionamento"
+}
+},
+{
+"tipo": "way",
+"id": 760200208,
+"centro": {
+"lat": -23.2904271,
+"lon": -45.9538225
+},
+"tags": {
+"highway": "service",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 760200209,
+"centro": {
+"lat": -23.2907553,
+"lon": -45.9542101
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 760200210,
+"centro": {
+"lat": -23.2906097,
+"lon": -45.9541536
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 760200211,
+"centro": {
+"lat": -23.2904817,
+"lon": -45.9542888
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 760200212,
+"centro": {
+"lat": -23.2905301,
+"lon": -45.9540256
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 760200213,
+"centro": {
+"lat": -23.2904553,
+"lon": -45.9539057
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 760200214,
+"centro": {
+"lat": -23.2903799,
+"lon": -45.9537853
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 760200215,
+"centro": {
+"lat": -23.2903016,
+"lon": -45.95366
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 760200216,
+"centro": {
+"lat": -23.2902215,
+"lon": -45.953532
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 760200217,
+"centro": {
+"lat": -23.2904308,
+"lon": -45.9539084
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 760200218,
+"centro": {
+"lat": -23.290572,
+"lon": -45.9545993
+},
+"tags": {
+"highway": "service",
+"oneway": "yes",
+"service": "driveway",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 760200219,
+"centro": {
+"lat": -23.2901558,
+"lon": -45.9539777
+},
+"tags": {
+"covered": "no",
+"highway": "service",
+"horse": "no",
+"oneway": "no",
+"service": "estacionamento",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 760200220,
+"centro": {
+"lat": -23.2902996,
+"lon": -45.9544211
+},
+"tags": {
+"covered": "no",
+"highway": "service",
+"horse": "no",
+"oneway": "yes",
+"service": "estacionamento"
+}
+},
+{
+"tipo": "way",
+"id": 771521722,
+"centro": {
+"lat": -23.2882469,
+"lon": -45.9487461
+},
+"tags": {
+"highway": "footway"
+}
+},
+{
+"tipo": "way",
+"id": 771875200,
+"centro": {
+"lat": -23.273112,
+"lon": -45.9530659
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 771875201,
+"centro": {
+"lat": -23.2730861,
+"lon": -45.9549217
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 771875202,
+"centro": {
+"lat": -23.2731098,
+"lon": -45.9547541
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 771875203,
+"centro": {
+"lat": -23.2731326,
+"lon": -45.9545899
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 771875204,
+"centro": {
+"lat": -23.2731527,
+"lon": -45.9544267
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 771875205,
+"centro": {
+"lat": -23.2731712,
+"lon": -45.9542637
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 771875206,
+"centro": {
+"lat": -23.2731882,
+"lon": -45.954099
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 771875207,
+"centro": {
+"lat": -23.2732233,
+"lon": -45.9532563
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 771875208,
+"centro": {
+"lat": -23.2732431,
+"lon": -45.9531176
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 771875209,
+"centro": {
+"lat": -23.2732615,
+"lon": -45.9529773
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 771875210,
+"centro": {
+"lat": -23.2732796,
+"lon": -45.9528172
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 771875213,
+"centro": {
+"lat": -23.2906013,
+"lon": -45.9511464
+},
+"tags": {
+"highway": "footway"
+}
+},
+{
+"tipo": "way",
+"id": 774878967,
+"centro": {
+"lat": -23.2756645,
+"lon": -45.9745132
+},
+"tags": {
+"highway": "service",
+"oneway": "yes",
+"service": "drive-through",
+"source": "DGP"
+}
+},
+{
+"tipo": "way",
+"id": 774878972,
+"centro": {
+"lat": -23.2767563,
+"lon": -45.9747919
+},
+"tags": {
+"highway": "service",
+"oneway": "yes",
+"service": "drive-through",
+"source": "DGP"
+}
+},
+{
+"tipo": "way",
+"id": 774878973,
+"centro": {
+"lat": -23.2760612,
+"lon": -45.9749053
+},
+"tags": {
+"highway": "service",
+"service": "drive-through",
+"source": "DGP"
+}
+},
+{
+"tipo": "way",
+"id": 774878976,
+"centro": {
+"lat": -23.2741055,
+"lon": -45.9709084
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"source": "DGP",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 774878977,
+"centro": {
+"lat": -23.2740542,
+"lon": -45.9708233
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"source": "DGP",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 774878978,
+"centro": {
+"lat": -23.2741415,
+"lon": -45.9712928
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"source": "DGP",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 774878979,
+"centro": {
+"lat": -23.2742257,
+"lon": -45.9714256
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"source": "DGP",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 774878980,
+"centro": {
+"lat": -23.274304,
+"lon": -45.9715492
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"source": "DGP",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 774878981,
+"centro": {
+"lat": -23.2743832,
+"lon": -45.9716742
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"source": "DGP",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 774878982,
+"centro": {
+"lat": -23.2744674,
+"lon": -45.9718067
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"source": "DGP",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 774878983,
+"centro": {
+"lat": -23.2753052,
+"lon": -45.9715367
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 774878984,
+"centro": {
+"lat": -23.2741279,
+"lon": -45.9715824
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 774878985,
+"centro": {
+"lat": -23.2741862,
+"lon": -45.9709507
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"source": "DGP",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 774878986,
+"centro": {
+"lat": -23.2744023,
+"lon": -45.9713821
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"source": "DGP",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 774878987,
+"centro": {
+"lat": -23.2747383,
+"lon": -45.9718264
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"source": "DGP",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 774878988,
+"centro": {
+"lat": -23.2737173,
+"lon": -45.9711851
+},
+"tags": {
+"highway": "service",
+"oneway": "yes",
+"service": "parking_aisle",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 774878989,
+"centro": {
+"lat": -23.2745745,
+"lon": -45.9722788
+},
+"tags": {
+"highway": "service",
+"oneway": "yes",
+"service": "parking_aisle",
+"source": "DGP",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 774878990,
+"centro": {
+"lat": -23.2746416,
+"lon": -45.9722295
+},
+"tags": {
+"highway": "service",
+"oneway": "yes",
+"service": "parking_aisle",
+"source": "DGP",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 774878991,
+"centro": {
+"lat": -23.2752583,
+"lon": -45.9729337
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"source": "DGP"
+}
+},
+{
+"tipo": "way",
+"id": 810824771,
+"centro": {
+"lat": -23.2790794,
+"lon": -45.9540487
+},
+"tags": {
+"highway": "service",
+"oneway": "yes",
+"service": "driveway",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 810824772,
+"centro": {
+"lat": -23.2815839,
+"lon": -45.9521922
+},
+"tags": {
+"highway": "footway"
+}
+},
+{
+"tipo": "way",
+"id": 810824773,
+"centro": {
+"lat": -23.2810815,
+"lon": -45.9522962
+},
+"tags": {
+"highway": "footway"
+}
+},
+{
+"tipo": "way",
+"id": 810824774,
+"centro": {
+"lat": -23.2812534,
+"lon": -45.9520883
+},
+"tags": {
+"highway": "footway"
+}
+},
+{
+"tipo": "way",
+"id": 810824775,
+"centro": {
+"lat": -23.2813371,
+"lon": -45.9522046
+},
+"tags": {
+"highway": "footway"
+}
+},
+{
+"tipo": "way",
+"id": 822374861,
+"centro": {
+"lat": -23.2774489,
+"lon": -45.9547166
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 822374862,
+"centro": {
+"lat": -23.2774096,
+"lon": -45.954444
+},
+"tags": {
+"highway": "service",
+"oneway": "yes",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 822374863,
+"centro": {
+"lat": -23.2772897,
+"lon": -45.9545613
+},
+"tags": {
+"highway": "service",
+"oneway": "yes",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 822374864,
+"centro": {
+"lat": -23.2771027,
+"lon": -45.9544724
+},
+"tags": {
+"highway": "service",
+"oneway": "yes",
+"service": "parking_aisle",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 822374865,
+"centro": {
+"lat": -23.2768197,
+"lon": -45.9540865
+},
+"tags": {
+"highway": "service",
+"oneway": "yes",
+"service": "driveway",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 822374866,
+"centro": {
+"lat": -23.2772289,
+"lon": -45.9541278
+},
+"tags": {
+"highway": "service",
+"oneway": "yes",
+"service": "driveway",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 822374867,
+"centro": {
+"lat": -23.2783368,
+"lon": -45.9536263
+},
+"tags": {
+"highway": "service",
+"oneway": "yes",
+"service": "driveway",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 823014650,
+"centro": {
+"lat": -23.2817561,
+"lon": -45.9499433
+},
+"tags": {
+"highway": "footway"
+}
+},
+{
+"tipo": "way",
+"id": 823014652,
+"centro": {
+"lat": -23.2828835,
+"lon": -45.9500203
+},
+"tags": {
+"highway": "footway"
+}
+},
+{
+"tipo": "way",
+"id": 823014653,
+"centro": {
+"lat": -23.2835196,
+"lon": -45.9509484
+},
+"tags": {
+"highway": "footway"
+}
+},
+{
+"tipo": "way",
+"id": 823014654,
+"centro": {
+"lat": -23.2825848,
+"lon": -45.9508047
+},
+"tags": {
+"highway": "footway"
+}
+},
+{
+"tipo": "way",
+"id": 825935081,
+"centro": {
+"lat": -23.2850617,
+"lon": -45.9499993
+},
+"tags": {
+"highway": "footway",
+"name": "Viela Dez"
+}
+},
+{
+"tipo": "way",
+"id": 825935082,
+"centro": {
+"lat": -23.2838396,
+"lon": -45.9501961
+},
+"tags": {
+"highway": "footway",
+"name": "Viela Nove"
+}
+},
+{
+"tipo": "way",
+"id": 825935083,
+"centro": {
+"lat": -23.2841516,
+"lon": -45.9506534
+},
+"tags": {
+"highway": "footway"
+}
+},
+{
+"tipo": "way",
+"id": 825952949,
+"centro": {
+"lat": -23.2775667,
+"lon": -45.9502747
+},
+"tags": {
+"highway": "service",
+"service": "driveway",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 826004208,
+"centro": {
+"lat": -23.2878342,
+"lon": -45.9553906
+},
+"tags": {
+"highway": "service",
+"service": "driveway",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 826008260,
+"centro": {
+"lat": -23.2802365,
+"lon": -45.951393
+},
+"tags": {
+"highway": "steps"
+}
+},
+{
+"tipo": "way",
+"id": 826017816,
+"centro": {
+"lat": -23.2768445,
+"lon": -45.9501925
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 826258034,
+"centro": {
+"lat": -23.2980918,
+"lon": -45.9636919
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 826258037,
+"centro": {
+"lat": -23.2962926,
+"lon": -45.9639036
+},
+"tags": {
+"highway": "service",
+"service": "driveway",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 826258038,
+"centro": {
+"lat": -23.2960659,
+"lon": -45.9631908
+},
+"tags": {
+"highway": "service",
+"oneway": "yes",
+"service": "driveway",
+"surface": "paving_stones"
+}
+},
+{
+"tipo": "way",
+"id": 826258039,
+"centro": {
+"lat": -23.2962419,
+"lon": -45.9636287
+},
+"tags": {
+"highway": "service",
+"maxspeed": "10",
+"oneway": "yes",
+"service": "parking_aisle",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 826272613,
+"centro": {
+"lat": -23.2894384,
+"lon": -45.9561324
+},
+"tags": {
+"highway": "service",
+"maxspeed": "20",
+"oneway": "yes",
+"service": "driveway",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 826311301,
+"centro": {
+"lat": -23.2981008,
+"lon": -45.9511352
+},
+"tags": {
+"cycleway:left": "lane",
+"highway": "primary",
+"lanes": "2",
+"maxspeed": "50",
+"name": "Rodovia Nilo Máximo",
+"oneway": "yes",
+"ref": "SP-077",
+"source": "Bing",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 828236775,
+"centro": {
+"lat": -23.3004351,
+"lon": -45.9489262
+},
+"tags": {
+"cycleway:left": "lane",
+"highway": "primary",
+"lanes": "2",
+"lit": "yes",
+"maxspeed": "50",
+"name": "Rodovia Nilo Máximo",
+"oneway": "yes",
+"ref": "SP-077",
+"source": "Bing",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 828236776,
+"centro": {
+"lat": -23.2972597,
+"lon": -45.9524019
+},
+"tags": {
+"cycleway:left": "lane",
+"highway": "primary",
+"maxspeed": "50",
+"name": "Avenida G. C. Josué Sant'Ana",
+"oneway": "yes",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 828236779,
+"centro": {
+"lat": -23.2975253,
+"lon": -45.9516798
+},
+"tags": {
+"highway": "steps",
+"name": "Rua Caçapava"
+}
+},
+{
+"tipo": "way",
+"id": 828236780,
+"centro": {
+"lat": -23.2975375,
+"lon": -45.9515466
+},
+"tags": {
+"highway": "footway",
+"surface": "concrete"
+}
+},
+{
+"tipo": "way",
+"id": 828236781,
+"centro": {
+"lat": -23.2974318,
+"lon": -45.9516122
+},
+"tags": {
+"highway": "footway"
+}
+},
+{
+"tipo": "way",
+"id": 828241615,
+"centro": {
+"lat": -23.2957581,
+"lon": -45.952049
+},
+"tags": {
+"highway": "service",
+"service": "driveway"
+}
+},
+{
+"tipo": "way",
+"id": 832940459,
+"centro": {
+"lat": -23.2766346,
+"lon": -45.9512759
+},
+"tags": {
+"highway": "service",
+"oneway": "yes",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 833375450,
+"centro": {
+"lat": -23.2911653,
+"lon": -45.9512189
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 834045168,
+"centro": {
+"lat": -23.2946495,
+"lon": -45.9728435
+},
+"tags": {
+"highway": "service",
+"service": "driveway",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 835318402,
+"centro": {
+"lat": -23.2871859,
+"lon": -45.9831622
+},
+"tags": {
+"highway": "service",
+"name": "Rua Rodolfo Anselmo",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 835349093,
+"centro": {
+"lat": -23.2843274,
+"lon": -45.9805063
+},
+"tags": {
+"access": "private",
+"highway": "service",
+"service": "driveway",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 835349094,
+"centro": {
+"lat": -23.2847905,
+"lon": -45.9813432
+},
+"tags": {
+"access": "private",
+"highway": "service",
+"service": "parking_aisle",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 836899365,
+"centro": {
+"lat": -23.2742189,
+"lon": -45.9634049
+},
+"tags": {
+"access": "no",
+"highway": "path"
+}
+},
+{
+"tipo": "way",
+"id": 838832497,
+"centro": {
+"lat": -23.2914368,
+"lon": -45.9571553
+},
+"tags": {
+"highway": "service",
+"oneway": "yes",
+"service": "parking_aisle",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 838832498,
+"centro": {
+"lat": -23.2911757,
+"lon": -45.9569601
+},
+"tags": {
+"highway": "service",
+"oneway": "no",
+"service": "parking_aisle",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 838832499,
+"centro": {
+"lat": -23.291347,
+"lon": -45.9570959
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 838832502,
+"centro": {
+"lat": -23.2913662,
+"lon": -45.9572067
+},
+"tags": {
+"highway": "service",
+"oneway": "yes",
+"service": "parking_aisle",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 838832503,
+"centro": {
+"lat": -23.291271,
+"lon": -45.9568878
+},
+"tags": {
+"highway": "service",
+"oneway": "no",
+"service": "parking_aisle",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 847048547,
+"centro": {
+"lat": -23.2697178,
+"lon": -45.966088
+},
+"tags": {
+"highway": "service",
+"oneway": "yes",
+"smoothness": "good",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 847048548,
+"centro": {
+"lat": -23.269789,
+"lon": -45.9660204
+},
+"tags": {
+"highway": "service",
+"oneway": "yes"
+}
+},
+{
+"tipo": "way",
+"id": 847053534,
+"centro": {
+"lat": -23.2746584,
+"lon": -45.9747577
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 847053535,
+"centro": {
+"lat": -23.2741976,
+"lon": -45.97561
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 847053536,
+"centro": {
+"lat": -23.2729995,
+"lon": -45.9755533
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 847053537,
+"centro": {
+"lat": -23.2723477,
+"lon": -45.9759147
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 847053538,
+"centro": {
+"lat": -23.2741203,
+"lon": -45.9761572
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 847053539,
+"centro": {
+"lat": -23.2735579,
+"lon": -45.9766024
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 847053540,
+"centro": {
+"lat": -23.2728227,
+"lon": -45.9747963
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 847053541,
+"centro": {
+"lat": -23.2732769,
+"lon": -45.97522
+},
+"tags": {
+"highway": "service",
+"service": "driveway"
+}
+},
+{
+"tipo": "way",
+"id": 869112403,
+"centro": {
+"lat": -23.2717705,
+"lon": -45.9509657
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 869112404,
+"centro": {
+"lat": -23.271958,
+"lon": -45.9511873
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 869112405,
+"centro": {
+"lat": -23.2715549,
+"lon": -45.9511227
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 869112406,
+"centro": {
+"lat": -23.2722572,
+"lon": -45.9519502
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 869112407,
+"centro": {
+"lat": -23.2721515,
+"lon": -45.9508493
+},
+"tags": {
+"highway": "service",
+"oneway": "yes"
+}
+},
+{
+"tipo": "way",
+"id": 872749291,
+"centro": {
+"lat": -23.2894209,
+"lon": -45.9545949
+},
+"tags": {
+"highway": "cycleway",
+"oneway": "no",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 876140717,
+"centro": {
+"lat": -23.2922227,
+"lon": -45.983554
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 876140718,
+"centro": {
+"lat": -23.2926599,
+"lon": -45.9839046
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 876164058,
+"centro": {
+"lat": -23.2975692,
+"lon": -45.9849643
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 876452294,
+"centro": {
+"lat": -23.2818723,
+"lon": -45.980094
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 876452295,
+"centro": {
+"lat": -23.2822676,
+"lon": -45.979859
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 876452296,
+"centro": {
+"lat": -23.2872432,
+"lon": -45.982864
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 876452297,
+"centro": {
+"lat": -23.2876568,
+"lon": -45.982821
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 876452298,
+"centro": {
+"lat": -23.2873014,
+"lon": -45.9825723
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 876452299,
+"centro": {
+"lat": -23.2863709,
+"lon": -45.97956
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 876452300,
+"centro": {
+"lat": -23.2866615,
+"lon": -45.9797135
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 876452301,
+"centro": {
+"lat": -23.2870131,
+"lon": -45.9804635
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 876452302,
+"centro": {
+"lat": -23.28596,
+"lon": -45.9796496
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 876452303,
+"centro": {
+"lat": -23.2886106,
+"lon": -45.9800848
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 876452304,
+"centro": {
+"lat": -23.2884418,
+"lon": -45.980086
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 876452305,
+"centro": {
+"lat": -23.2889785,
+"lon": -45.9801146
+},
+"tags": {
+"highway": "service",
+"service": "driveway"
+}
+},
+{
+"tipo": "way",
+"id": 876452306,
+"centro": {
+"lat": -23.2885481,
+"lon": -45.9800869
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 876452307,
+"centro": {
+"lat": -23.2892963,
+"lon": -45.9804599
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 876452308,
+"centro": {
+"lat": -23.2891926,
+"lon": -45.9804685
+},
+"tags": {
+"highway": "service",
+"service": "driveway"
+}
+},
+{
+"tipo": "way",
+"id": 876452309,
+"centro": {
+"lat": -23.2887115,
+"lon": -45.9835942
+},
+"tags": {
+"highway": "service",
+"service": "driveway"
+}
+},
+{
+"tipo": "way",
+"id": 876486377,
+"centro": {
+"lat": -23.2920581,
+"lon": -45.9846165
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 876486378,
+"centro": {
+"lat": -23.2919175,
+"lon": -45.9846685
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 876486381,
+"centro": {
+"lat": -23.292123,
+"lon": -45.9799712
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 876486382,
+"centro": {
+"lat": -23.2923273,
+"lon": -45.9800781
+},
+"tags": {
+"highway": "service",
+"service": "driveway",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 876486383,
+"centro": {
+"lat": -23.2924163,
+"lon": -45.9799645
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 876486384,
+"centro": {
+"lat": -23.2919793,
+"lon": -45.9810142
+},
+"tags": {
+"highway": "service",
+"service": "driveway",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 876486385,
+"centro": {
+"lat": -23.2873872,
+"lon": -45.9845986
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 876486386,
+"centro": {
+"lat": -23.2764823,
+"lon": -45.9846362
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 876486387,
+"centro": {
+"lat": -23.2778177,
+"lon": -45.9847424
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 876486388,
+"centro": {
+"lat": -23.2811783,
+"lon": -45.9794912
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 876486389,
+"centro": {
+"lat": -23.2811174,
+"lon": -45.9794763
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 876486390,
+"centro": {
+"lat": -23.28111,
+"lon": -45.9795629
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 876486391,
+"centro": {
+"lat": -23.2812595,
+"lon": -45.9796306
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 876486392,
+"centro": {
+"lat": -23.2814194,
+"lon": -45.9796812
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 876486393,
+"centro": {
+"lat": -23.2818088,
+"lon": -45.9794941
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 876486394,
+"centro": {
+"lat": -23.2821608,
+"lon": -45.9780307
+},
+"tags": {
+"highway": "service",
+"service": "driveway",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 876486395,
+"centro": {
+"lat": -23.2810245,
+"lon": -45.9803492
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 876486396,
+"centro": {
+"lat": -23.280903,
+"lon": -45.9804834
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 876486397,
+"centro": {
+"lat": -23.2807203,
+"lon": -45.979936
+},
+"tags": {
+"highway": "service",
+"service": "driveway",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 876486398,
+"centro": {
+"lat": -23.2860876,
+"lon": -45.9801141
+},
+"tags": {
+"highway": "service",
+"service": "driveway"
+}
+},
+{
+"tipo": "way",
+"id": 876486399,
+"centro": {
+"lat": -23.2857751,
+"lon": -45.9816417
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 876486400,
+"centro": {
+"lat": -23.2861207,
+"lon": -45.9847402
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 876486401,
+"centro": {
+"lat": -23.2868542,
+"lon": -45.9849373
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 876486402,
+"centro": {
+"lat": -23.2870375,
+"lon": -45.9832791
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 877508855,
+"centro": {
+"lat": -23.2912384,
+"lon": -45.9816848
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 877508856,
+"centro": {
+"lat": -23.2913805,
+"lon": -45.982665
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 877508857,
+"centro": {
+"lat": -23.2772145,
+"lon": -45.9838003
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 877727439,
+"centro": {
+"lat": -23.2766347,
+"lon": -45.9756883
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 877727440,
+"centro": {
+"lat": -23.2767549,
+"lon": -45.9756297
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 877727441,
+"centro": {
+"lat": -23.2793226,
+"lon": -45.9734615
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 877727442,
+"centro": {
+"lat": -23.2780579,
+"lon": -45.9745711
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 877727443,
+"centro": {
+"lat": -23.2788918,
+"lon": -45.9741628
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 877727444,
+"centro": {
+"lat": -23.2786779,
+"lon": -45.9742418
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 877727445,
+"centro": {
+"lat": -23.2784401,
+"lon": -45.9740177
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 877727446,
+"centro": {
+"lat": -23.278089,
+"lon": -45.9733136
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 877727447,
+"centro": {
+"lat": -23.2781672,
+"lon": -45.9734792
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 877727448,
+"centro": {
+"lat": -23.2782404,
+"lon": -45.9736624
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 877727449,
+"centro": {
+"lat": -23.2777981,
+"lon": -45.9737637
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 877727450,
+"centro": {
+"lat": -23.278238,
+"lon": -45.9738756
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 877727451,
+"centro": {
+"lat": -23.2784605,
+"lon": -45.9743139
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 877727452,
+"centro": {
+"lat": -23.2783671,
+"lon": -45.974106
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 877727453,
+"centro": {
+"lat": -23.2795061,
+"lon": -45.9735895
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 877727454,
+"centro": {
+"lat": -23.2791967,
+"lon": -45.9732609
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 877727455,
+"centro": {
+"lat": -23.278976,
+"lon": -45.9729784
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 877727456,
+"centro": {
+"lat": -23.2789596,
+"lon": -45.9736097
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 877727457,
+"centro": {
+"lat": -23.278025,
+"lon": -45.9748592
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 877727458,
+"centro": {
+"lat": -23.2780223,
+"lon": -45.975026
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 877727459,
+"centro": {
+"lat": -23.2780144,
+"lon": -45.9749811
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 877727460,
+"centro": {
+"lat": -23.2777161,
+"lon": -45.9755328
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 877727461,
+"centro": {
+"lat": -23.2775442,
+"lon": -45.9755408
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 877727462,
+"centro": {
+"lat": -23.2773575,
+"lon": -45.9755026
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 877727463,
+"centro": {
+"lat": -23.276535,
+"lon": -45.9753727
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 877727464,
+"centro": {
+"lat": -23.2763053,
+"lon": -45.9753393
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 877727465,
+"centro": {
+"lat": -23.2771397,
+"lon": -45.9752826
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 877732494,
+"centro": {
+"lat": -23.2817059,
+"lon": -45.9783263
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 877732495,
+"centro": {
+"lat": -23.2887626,
+"lon": -45.9617413
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 877732496,
+"centro": {
+"lat": -23.280167,
+"lon": -45.9707923
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 877853866,
+"centro": {
+"lat": -23.2812958,
+"lon": -45.9676019
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 877853867,
+"centro": {
+"lat": -23.2807238,
+"lon": -45.9678056
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 877853868,
+"centro": {
+"lat": -23.280804,
+"lon": -45.9683831
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 877853869,
+"centro": {
+"lat": -23.2807731,
+"lon": -45.9679081
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 880882847,
+"centro": {
+"lat": -23.2963333,
+"lon": -45.9738471
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 880882848,
+"centro": {
+"lat": -23.2961965,
+"lon": -45.9738546
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 880882849,
+"centro": {
+"lat": -23.2960272,
+"lon": -45.9735041
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 880882850,
+"centro": {
+"lat": -23.2962593,
+"lon": -45.9738536
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 883662033,
+"centro": {
+"lat": -23.290121,
+"lon": -45.9552302
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 883662034,
+"centro": {
+"lat": -23.2895313,
+"lon": -45.9558193
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 883662035,
+"centro": {
+"lat": -23.2896919,
+"lon": -45.9558515
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 883662036,
+"centro": {
+"lat": -23.2896176,
+"lon": -45.9559617
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 883666140,
+"centro": {
+"lat": -23.2910486,
+"lon": -45.9557916
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 883666141,
+"centro": {
+"lat": -23.2905402,
+"lon": -45.9568393
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 883686304,
+"centro": {
+"lat": -23.2861615,
+"lon": -45.954489
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 883686305,
+"centro": {
+"lat": -23.2904787,
+"lon": -45.9543533
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 883686306,
+"centro": {
+"lat": -23.2905709,
+"lon": -45.9543495
+},
+"tags": {
+"highway": "service",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 883709219,
+"centro": {
+"lat": -23.2862784,
+"lon": -45.9563544
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 883715500,
+"centro": {
+"lat": -23.287919,
+"lon": -45.9541592
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 883715501,
+"centro": {
+"lat": -23.2878595,
+"lon": -45.9540416
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 883715502,
+"centro": {
+"lat": -23.2879417,
+"lon": -45.9540942
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 883715503,
+"centro": {
+"lat": -23.2884703,
+"lon": -45.9542081
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 883715531,
+"centro": {
+"lat": -23.2756839,
+"lon": -45.9555427
+},
+"tags": {
+"access": "private",
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 883715532,
+"centro": {
+"lat": -23.2794977,
+"lon": -45.9543712
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 883715533,
+"centro": {
+"lat": -23.2795165,
+"lon": -45.9543279
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 883715534,
+"centro": {
+"lat": -23.2794922,
+"lon": -45.9543363
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 883715535,
+"centro": {
+"lat": -23.2785561,
+"lon": -45.9538429
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 883715536,
+"centro": {
+"lat": -23.277217,
+"lon": -45.9503893
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 883715537,
+"centro": {
+"lat": -23.277262,
+"lon": -45.9508869
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 883715538,
+"centro": {
+"lat": -23.2772772,
+"lon": -45.9507289
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 883715539,
+"centro": {
+"lat": -23.2771219,
+"lon": -45.9507083
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 883715540,
+"centro": {
+"lat": -23.2772661,
+"lon": -45.9508091
+},
+"tags": {
+"highway": "service",
+"oneway": "yes",
+"service": "parking_aisle",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 883715541,
+"centro": {
+"lat": -23.2766001,
+"lon": -45.951406
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 883715542,
+"centro": {
+"lat": -23.2768155,
+"lon": -45.9518212
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 883715543,
+"centro": {
+"lat": -23.2766593,
+"lon": -45.9518248
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 883715544,
+"centro": {
+"lat": -23.2765123,
+"lon": -45.9518283
+},
+"tags": {
+"highway": "service",
+"oneway": "yes",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 883715545,
+"centro": {
+"lat": -23.2766446,
+"lon": -45.9518318
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 883723825,
+"centro": {
+"lat": -23.2767717,
+"lon": -45.9510469
+},
+"tags": {
+"highway": "service",
+"service": "driveway"
+}
+},
+{
+"tipo": "way",
+"id": 884612002,
+"centro": {
+"lat": -23.2976498,
+"lon": -45.9522129
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 884659728,
+"centro": {
+"lat": -23.2955707,
+"lon": -45.9668261
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 884659729,
+"centro": {
+"lat": -23.2956737,
+"lon": -45.96705
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 884675698,
+"centro": {
+"lat": -23.2774226,
+"lon": -45.9500564
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 884984463,
+"centro": {
+"lat": -23.2793777,
+"lon": -45.950322
+},
+"tags": {
+"highway": "service",
+"service": "driveway"
+}
+},
+{
+"tipo": "way",
+"id": 885403801,
+"centro": {
+"lat": -23.2959338,
+"lon": -45.9617812
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 885403802,
+"centro": {
+"lat": -23.295868,
+"lon": -45.9618509
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 885403803,
+"centro": {
+"lat": -23.295842,
+"lon": -45.9616317
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 885403804,
+"centro": {
+"lat": -23.2953141,
+"lon": -45.9669823
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 885403805,
+"centro": {
+"lat": -23.2954073,
+"lon": -45.9665346
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 895661396,
+"centro": {
+"lat": -23.2755111,
+"lon": -45.9546462
+},
+"tags": {
+"access": "private",
+"highway": "service",
+"oneway": "yes",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 895661397,
+"centro": {
+"lat": -23.2755805,
+"lon": -45.9546254
+},
+"tags": {
+"access": "private",
+"highway": "service",
+"oneway": "yes",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 911234017,
+"centro": {
+"lat": -23.2743173,
+"lon": -45.9738767
+},
+"tags": {
+"highway": "footway"
+}
+},
+{
+"tipo": "way",
+"id": 929002865,
+"centro": {
+"lat": -23.2709346,
+"lon": -45.9824495
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 929002866,
+"centro": {
+"lat": -23.2722931,
+"lon": -45.9818255
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 958298581,
+"centro": {
+"lat": -23.2869808,
+"lon": -45.9499948
+},
+"tags": {
+"handrail": "yes",
+"highway": "steps"
+}
+},
+{
+"tipo": "way",
+"id": 958298586,
+"centro": {
+"lat": -23.2874265,
+"lon": -45.9534556
+},
+"tags": {
+"highway": "service",
+"service": "driveway",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 959571518,
+"centro": {
+"lat": -23.2999055,
+"lon": -45.9793883
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 959571519,
+"centro": {
+"lat": -23.2977864,
+"lon": -45.9813087
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 959571520,
+"centro": {
+"lat": -23.2961012,
+"lon": -45.9825873
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 959571522,
+"centro": {
+"lat": -23.2959124,
+"lon": -45.9823296
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 960907513,
+"centro": {
+"lat": -23.2997938,
+"lon": -45.9539842
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 961995192,
+"centro": {
+"lat": -23.2870374,
+"lon": -45.9830635
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 962014796,
+"centro": {
+"lat": -23.2999839,
+"lon": -45.9584747
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 962014797,
+"centro": {
+"lat": -23.2996842,
+"lon": -45.9586059
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 962014798,
+"centro": {
+"lat": -23.2995615,
+"lon": -45.9590903
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 962014799,
+"centro": {
+"lat": -23.2998114,
+"lon": -45.9588294
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 962014800,
+"centro": {
+"lat": -23.2977132,
+"lon": -45.9548544
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 962016398,
+"centro": {
+"lat": -23.2856572,
+"lon": -45.9533498
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 962056925,
+"centro": {
+"lat": -23.2828256,
+"lon": -45.9533318
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 962061746,
+"centro": {
+"lat": -23.2894205,
+"lon": -45.9657853
+},
+"tags": {
+"highway": "service",
+"oneway": "yes",
+"service": "driveway",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 962061747,
+"centro": {
+"lat": -23.2894588,
+"lon": -45.9658188
+},
+"tags": {
+"highway": "service",
+"oneway": "yes",
+"service": "driveway"
+}
+},
+{
+"tipo": "way",
+"id": 962075293,
+"centro": {
+"lat": -23.2941316,
+"lon": -45.9571968
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 962081390,
+"centro": {
+"lat": -23.2826688,
+"lon": -45.9549866
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 962081391,
+"centro": {
+"lat": -23.2799789,
+"lon": -45.9513123
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 962083686,
+"centro": {
+"lat": -23.2877743,
+"lon": -45.9516098
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 962414639,
+"centro": {
+"lat": -23.2994027,
+"lon": -45.9698315
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 962414640,
+"centro": {
+"lat": -23.2990137,
+"lon": -45.9702369
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 962634185,
+"centro": {
+"lat": -23.2832804,
+"lon": -45.9660135
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 962634186,
+"centro": {
+"lat": -23.2839514,
+"lon": -45.9690739
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 962634187,
+"centro": {
+"lat": -23.2833774,
+"lon": -45.9666764
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 962634188,
+"centro": {
+"lat": -23.2800244,
+"lon": -45.96499
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 962634189,
+"centro": {
+"lat": -23.2800389,
+"lon": -45.9651927
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 962648548,
+"centro": {
+"lat": -23.2907569,
+"lon": -45.9676862
+},
+"tags": {
+"access": "private",
+"highway": "service",
+"service": "parking_aisle",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 962648549,
+"centro": {
+"lat": -23.2893572,
+"lon": -45.9691843
+},
+"tags": {
+"access": "private",
+"highway": "service",
+"service": "parking_aisle",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 962648550,
+"centro": {
+"lat": -23.2912187,
+"lon": -45.9663716
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 962648551,
+"centro": {
+"lat": -23.2911695,
+"lon": -45.9665107
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 962648552,
+"centro": {
+"lat": -23.2910952,
+"lon": -45.9665528
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 962670648,
+"centro": {
+"lat": -23.2851859,
+"lon": -45.9701698
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 962670649,
+"centro": {
+"lat": -23.2902367,
+"lon": -45.968326
+},
+"tags": {
+"access": "private",
+"highway": "service",
+"service": "parking_aisle",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 973344601,
+"centro": {
+"lat": -23.2770271,
+"lon": -45.9542164
+},
+"tags": {
+"highway": "service",
+"oneway": "yes",
+"service": "driveway",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 1000653374,
+"centro": {
+"lat": -23.2993352,
+"lon": -45.9646487
+},
+"tags": {
+"highway": "footway"
+}
+},
+{
+"tipo": "way",
+"id": 1000653376,
+"centro": {
+"lat": -23.2994517,
+"lon": -45.9645854
+},
+"tags": {
+"bridge": "yes",
+"highway": "footway",
+"layer": "1"
+}
+},
+{
+"tipo": "way",
+"id": 1000653377,
+"centro": {
+"lat": -23.2994725,
+"lon": -45.9645199
+},
+"tags": {
+"highway": "footway"
+}
+},
+{
+"tipo": "way",
+"id": 1000653378,
+"centro": {
+"lat": -23.2992007,
+"lon": -45.9647391
+},
+"tags": {
+"crossing": "marked",
+"crossing:markings": "yes",
+"footway": "crossing",
+"highway": "footway"
+}
+},
+{
+"tipo": "way",
+"id": 1019235468,
+"centro": {
+"lat": -23.2902943,
+"lon": -45.9664631
+},
+"tags": {
+"highway": "footway"
+}
+},
+{
+"tipo": "way",
+"id": 1133828544,
+"centro": {
+"lat": -23.2948557,
+"lon": -45.9542035
+},
+"tags": {
+"highway": "path"
+}
+},
+{
+"tipo": "way",
+"id": 1185572071,
+"centro": {
+"lat": -23.2743986,
+"lon": -45.9738684
+},
+"tags": {
+"access": "yes",
+"highway": "steps",
+"layer": "1",
+"surface": "concrete"
+}
+},
+{
+"tipo": "way",
+"id": 1185572072,
+"centro": {
+"lat": -23.2750092,
+"lon": -45.9738699
+},
+"tags": {
+"access": "yes",
+"highway": "steps",
+"layer": "1",
+"surface": "concrete"
+}
+},
+{
+"tipo": "way",
+"id": 1231589479,
+"centro": {
+"lat": -23.2730967,
+"lon": -45.961352
+},
+"tags": {
+"highway": "path"
+}
+},
+{
+"tipo": "way",
+"id": 1231589483,
+"centro": {
+"lat": -23.270816,
+"lon": -45.9562126
+},
+"tags": {
+"highway": "path"
+}
+},
+{
+"tipo": "way",
+"id": 1240958714,
+"centro": {
+"lat": -23.2854508,
+"lon": -45.9532555
+},
+"tags": {
+"highway": "service",
+"lit": "yes",
+"service": "parking_aisle",
+"surface": "concrete"
+}
+},
+{
+"tipo": "way",
+"id": 1247343896,
+"centro": {
+"lat": -23.2916539,
+"lon": -45.9825934
+},
+"tags": {
+"highway": "service",
+"surface": "paved"
+}
+},
+{
+"tipo": "way",
+"id": 1274070091,
+"centro": {
+"lat": -23.287306,
+"lon": -45.9702267
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 1283863476,
+"centro": {
+"lat": -23.2958951,
+"lon": -45.9608804
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 1283865834,
+"centro": {
+"lat": -23.298041,
+"lon": -45.9672959
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 1283865835,
+"centro": {
+"lat": -23.297902,
+"lon": -45.9671946
+},
+"tags": {
+"highway": "service",
+"oneway": "yes"
+}
+},
+{
+"tipo": "way",
+"id": 1283868511,
+"centro": {
+"lat": -23.2995911,
+"lon": -45.9723504
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 1284168549,
+"centro": {
+"lat": -23.2995276,
+"lon": -45.950536
+},
+"tags": {
+"access": "private",
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 1284168550,
+"centro": {
+"lat": -23.2988467,
+"lon": -45.9503507
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 1284929624,
+"centro": {
+"lat": -23.298948,
+"lon": -45.9503744
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 1286222135,
+"centro": {
+"lat": -23.2847804,
+"lon": -45.9696682
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 1286222136,
+"centro": {
+"lat": -23.2847496,
+"lon": -45.9702246
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 1292366885,
+"centro": {
+"lat": -23.300034,
+"lon": -45.9559988
+},
+"tags": {
+"highway": "service",
+"oneway": "yes"
+}
+},
+{
+"tipo": "way",
+"id": 1312830200,
+"centro": {
+"lat": -23.29479,
+"lon": -45.9745723
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 1392798977,
+"centro": {
+"lat": -23.2815256,
+"lon": -45.9800755
+},
+"tags": {
+"crossing": "uncontrolled",
+"crossing:markings": "zebra",
+"footway": "crossing",
+"highway": "footway",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 1411361497,
+"centro": {
+"lat": -23.2883554,
+"lon": -45.9666156
+},
+"tags": {
+"highway": "footway"
+}
+},
+{
+"tipo": "way",
+"id": 1415285719,
+"centro": {
+"lat": -23.2846075,
+"lon": -45.9525689
+},
+"tags": {
+"crossing": "uncontrolled",
+"crossing:island": "yes",
+"crossing:markings": "zebra",
+"footway": "crossing",
+"highway": "footway",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 1431911333,
+"centro": {
+"lat": -23.2931477,
+"lon": -45.9606881
+},
+"tags": {
+"footway": "crossing",
+"highway": "footway"
+}
+},
+{
+"tipo": "way",
+"id": 1431911334,
+"centro": {
+"lat": -23.2932476,
+"lon": -45.9608564
+},
+"tags": {
+"footway": "crossing",
+"highway": "footway"
+}
+},
+{
+"tipo": "way",
+"id": 1431911335,
+"centro": {
+"lat": -23.2936433,
+"lon": -45.9604607
+},
+"tags": {
+"footway": "crossing",
+"highway": "footway"
+}
+},
+{
+"tipo": "way",
+"id": 1432340106,
+"centro": {
+"lat": -23.2815356,
+"lon": -45.9525587
+},
+"tags": {
+"footway": "crossing",
+"highway": "footway"
+}
+},
+{
+"tipo": "way",
+"id": 1432340107,
+"centro": {
+"lat": -23.2815897,
+"lon": -45.9524179
+},
+"tags": {
+"footway": "crossing",
+"highway": "footway"
+}
+},
+{
+"tipo": "way",
+"id": 1436326366,
+"centro": {
+"lat": -23.2974622,
+"lon": -45.9679534
+},
+"tags": {
+"highway": "path"
+}
+},
+{
+"tipo": "way",
+"id": 1436326367,
+"centro": {
+"lat": -23.2974568,
+"lon": -45.9679667
+},
+"tags": {
+"highway": "path"
+}
+},
+{
+"tipo": "way",
+"id": 1436326368,
+"centro": {
+"lat": -23.2975191,
+"lon": -45.9678384
+},
+"tags": {
+"highway": "path"
+}
+},
+{
+"tipo": "way",
+"id": 1436326369,
+"centro": {
+"lat": -23.2973893,
+"lon": -45.96806
+},
+"tags": {
+"highway": "path"
+}
+},
+{
+"tipo": "way",
+"id": 1436326370,
+"centro": {
+"lat": -23.2976008,
+"lon": -45.9682638
+},
+"tags": {
+"access": "no",
+"highway": "path"
+}
+},
+{
+"tipo": "way",
+"id": 1436328223,
+"centro": {
+"lat": -23.2974549,
+"lon": -45.9679465
+},
+"tags": {
+"highway": "footway"
+}
+},
+{
+"tipo": "way",
+"id": 1442331057,
+"centro": {
+"lat": -23.2910804,
+"lon": -45.9581727
+},
+"tags": {
+"highway": "footway"
+}
+},
+{
+"tipo": "way",
+"id": 1442331058,
+"centro": {
+"lat": -23.2910481,
+"lon": -45.9576879
+},
+"tags": {
+"footway": "crossing",
+"highway": "footway"
+}
+},
+{
+"tipo": "way",
+"id": 1442331059,
+"centro": {
+"lat": -23.2906155,
+"lon": -45.9588919
+},
+"tags": {
+"highway": "footway"
+}
+},
+{
+"tipo": "way",
+"id": 1442331060,
+"centro": {
+"lat": -23.2906131,
+"lon": -45.9589095
+},
+"tags": {
+"highway": "footway"
+}
+},
+{
+"tipo": "way",
+"id": 1442332099,
+"centro": {
+"lat": -23.2926883,
+"lon": -45.9600229
+},
+"tags": {
+"footway": "crossing",
+"highway": "footway"
+}
+},
+{
+"tipo": "way",
+"id": 1443701362,
+"centro": {
+"lat": -23.2909233,
+"lon": -45.9583488
+},
+"tags": {
+"highway": "footway"
+}
+},
+{
+"tipo": "way",
+"id": 1443701363,
+"centro": {
+"lat": -23.2909411,
+"lon": -45.9583298
+},
+"tags": {
+"highway": "steps"
+}
+},
+{
+"tipo": "way",
+"id": 1447963661,
+"centro": {
+"lat": -23.2898972,
+"lon": -45.9537542
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 1447963662,
+"centro": {
+"lat": -23.2901024,
+"lon": -45.9539164
+},
+"tags": {
+"highway": "service",
+"layer": "-1"
+}
+},
+{
+"tipo": "way",
+"id": 1447963663,
+"centro": {
+"lat": -23.2900833,
+"lon": -45.9539752
+},
+"tags": {
+"highway": "service",
+"layer": "-1"
+}
+},
+{
+"tipo": "way",
+"id": 1483919750,
+"centro": {
+"lat": -23.2970877,
+"lon": -45.9540619
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 1484195691,
+"centro": {
+"lat": -23.2876345,
+"lon": -45.9506091
+},
+"tags": {
+"access": "private",
+"highway": "service",
+"horse": "no",
+"lit": "yes",
+"service": "parking_aisle",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 1484195692,
+"centro": {
+"lat": -23.2874522,
+"lon": -45.950987
+},
+"tags": {
+"crossing": "uncontrolled",
+"crossing:markings": "zebra",
+"footway": "crossing",
+"highway": "footway",
+"surface": "asphalt"
+}
+},
+{
+"tipo": "way",
+"id": 1499883236,
+"centro": {
+"lat": -23.2724426,
+"lon": -45.9751888
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 1518568743,
+"centro": {
+"lat": -23.2899582,
+"lon": -45.9675666
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 1518568744,
+"centro": {
+"lat": -23.2900411,
+"lon": -45.9677353
+},
+"tags": {
+"access": "private",
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 1518568745,
+"centro": {
+"lat": -23.2901427,
+"lon": -45.9678719
+},
+"tags": {
+"access": "private",
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 1518588049,
+"centro": {
+"lat": -23.2781078,
+"lon": -45.9514913
+},
+"tags": {
+"highway": "service",
+"oneway": "yes"
+}
+},
+{
+"tipo": "way",
+"id": 1518588050,
+"centro": {
+"lat": -23.277992,
+"lon": -45.9515847
+},
+"tags": {
+"covered": "yes",
+"highway": "service",
+"oneway": "yes"
+}
+},
+{
+"tipo": "way",
+"id": 1518588051,
+"centro": {
+"lat": -23.2778764,
+"lon": -45.9514721
+},
+"tags": {
+"highway": "service",
+"oneway": "yes"
+}
+},
+{
+"tipo": "way",
+"id": 1518588052,
+"centro": {
+"lat": -23.2781541,
+"lon": -45.9523963
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 1518588053,
+"centro": {
+"lat": -23.2781742,
+"lon": -45.9525383
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 1518588054,
+"centro": {
+"lat": -23.2781904,
+"lon": -45.9522933
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 1518589936,
+"centro": {
+"lat": -23.2960996,
+"lon": -45.9528428
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 1518755775,
+"centro": {
+"lat": -23.2963458,
+"lon": -45.9539299
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 1518755776,
+"centro": {
+"lat": -23.2964063,
+"lon": -45.9539836
+},
+"tags": {
+"bridge": "yes",
+"highway": "service",
+"layer": "1"
+}
+},
+{
+"tipo": "way",
+"id": 1518755777,
+"centro": {
+"lat": -23.29665,
+"lon": -45.954085
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 1539300641,
+"centro": {
+"lat": -23.277497,
+"lon": -45.9513074
+},
+"tags": {
+"crossing": "uncontrolled",
+"crossing:island": "yes",
+"crossing:markings": "yes",
+"footway": "crossing",
+"highway": "footway"
+}
+},
+{
+"tipo": "way",
+"id": 1565686891,
+"centro": {
+"lat": -23.2971597,
+"lon": -45.9593917
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 1565901025,
+"centro": {
+"lat": -23.2955628,
+"lon": -45.9514969
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 1565901026,
+"centro": {
+"lat": -23.2956361,
+"lon": -45.9516377
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 1565901027,
+"centro": {
+"lat": -23.295711,
+"lon": -45.9517813
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 1565901028,
+"centro": {
+"lat": -23.2954443,
+"lon": -45.9511931
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 1565901029,
+"centro": {
+"lat": -23.295446,
+"lon": -45.9513125
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 1565940380,
+"centro": {
+"lat": -23.2876969,
+"lon": -45.9531398
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 1565940381,
+"centro": {
+"lat": -23.2874092,
+"lon": -45.9525519
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 1565940382,
+"centro": {
+"lat": -23.2880332,
+"lon": -45.9526752
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 1566971300,
+"centro": {
+"lat": -23.2739706,
+"lon": -45.9833823
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 1566971301,
+"centro": {
+"lat": -23.2731689,
+"lon": -45.9818722
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 1566971302,
+"centro": {
+"lat": -23.2732416,
+"lon": -45.9818722
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 1566971303,
+"centro": {
+"lat": -23.2732123,
+"lon": -45.9816352
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 1566971304,
+"centro": {
+"lat": -23.274161,
+"lon": -45.982518
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 1568680014,
+"centro": {
+"lat": -23.281474,
+"lon": -45.9572422
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 1568680015,
+"centro": {
+"lat": -23.2818067,
+"lon": -45.9573702
+},
+"tags": {
+"highway": "service"
+}
+},
+{
+"tipo": "way",
+"id": 1568682265,
+"centro": {
+"lat": -23.2992519,
+"lon": -45.9499216
+},
+"tags": {
+"highway": "service",
+"oneway": "yes"
+}
+},
+{
+"tipo": "way",
+"id": 1570245125,
+"centro": {
+"lat": -23.2990962,
+"lon": -45.9500713
+},
+"tags": {
+"highway": "service",
+"oneway": "yes"
+}
+},
+{
+"tipo": "way",
+"id": 1570622645,
+"centro": {
+"lat": -23.295616,
+"lon": -45.9737965
+},
+"tags": {
+"highway": "service",
+"service": "parking_aisle"
+}
+},
+{
+"tipo": "way",
+"id": 1570691674,
+"centro": {
+"lat": -23.2705561,
+"lon": -45.9504313
+},
+"tags": {
+"highway": "service",
+"oneway": "yes"
+}
+},
+{
+"tipo": "way",
+"id": 1570691675,
+"centro": {
+"lat": -23.2705526,
+"lon": -45.9504458
+},
+"tags": {
+"highway": "service",
+"oneway": "yes"
+}
+},
+{
+"tipo": "way",
+"id": 1571016415,
+"centro": {
+"lat": -23.2776139,
+"lon": -45.9514292
+},
+"tags": {
+"highway": "service",
+"service": "driveway"
+}
+},
+{
+"tipo": "way",
+"id": 1571017180,
+"centro": {
+"lat": -23.2709489,
+"lon": -45.9509537
+},
+"tags": {
+"highway": "service",
+"service": "driveway"
+}
+}
+]

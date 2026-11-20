@@ -1,0 +1,24 @@
+name: Diagnóstico das ciclovias
+
+on:
+  push:
+    branches: [claude/jolly-davinci-8uissp]
+    paths: [scripts/diagnostico.py]
+
+permissions:
+  contents: write
+
+jobs:
+  ver:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          python3 scripts/diagnostico.py
+          git add diagnostico.json
+          git diff --cached --quiet && exit 0
+          git commit -q -m "diagnostico"
+          git push || (git pull -q --rebase -X theirs && git push)
