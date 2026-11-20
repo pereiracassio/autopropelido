@@ -172,7 +172,7 @@ function desenhar(vias) {
 aviso('Carregando…');
 fetch('vias.json?v=2')
   .then(function (r) { if (!r.ok) throw new Error('erro ' + r.status); return r.json(); })
-  .then(function (vias) { desenhar(vias); aviso(''); })
+  .then(function (vias) { viasCarregadas = vias; desenhar(vias); aviso(''); })
   .catch(function (e) { aviso('Não foi possível carregar as vias (' + String(e && e.message || e).slice(0, 40) + ')'); });
 
 
@@ -236,24 +236,66 @@ function calcular() {
   mapa.fitBounds(L.latLngBounds(r.pontos).extend([de.lat, de.lon]).extend([destino.lat, destino.lon]), { paddingTopLeft: [20, 170], paddingBottomRight: [20, 60] });
 }
 
-// busca de endereço (OpenStreetMap/Nominatim), só dentro de Jacareí
+// busca de lugar: primeiro nos lugares e ruas guardados de Jacareí, depois no Nominatim
+var viasCarregadas = [], indiceBusca = null;
+var TIPOS = { fitness_centre: 'academia', sports_centre: 'esporte', restaurant: 'restaurante', fast_food: 'lanchonete', cafe: 'café', bakery: 'padaria', pharmacy: 'farmácia', supermarket: 'mercado', convenience: 'mercado', school: 'escola', university: 'faculdade', hospital: 'hospital', clinic: 'clínica', bank: 'banco', fuel: 'posto', bus_station: 'rodoviária', place_of_worship: 'igreja', park: 'parque', suburb: 'bairro', neighbourhood: 'bairro', quarter: 'bairro', city: 'cidade', town: 'cidade', mall: 'shopping', clothes: 'roupas', hairdresser: 'cabeleireiro', car_repair: 'oficina', bar: 'bar', pub: 'bar', cinema: 'cinema', police: 'polícia', townhall: 'prefeitura' };
+var PARTICULAS = { de: 1, da: 1, do: 1, dos: 1, das: 1, e: 1, a: 1, o: 1 };
+function norm(t) { return String(t || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); }
+
+function montarIndice(lugares) {
+  var lista = [], vistas = {};
+  (lugares || []).forEach(function (l) { lista.push({ n: l[0], k: norm(l[0]), lat: l[1], lon: l[2], t: TIPOS[l[3]] || '' }); });
+  viasCarregadas.forEach(function (v) {
+    var nome = v.t.name; if (!nome || vistas[nome]) return;
+    vistas[nome] = 1;
+    var m = v.g[Math.floor(v.g.length / 2)];
+    lista.push({ n: nome, k: norm(nome), lat: m[0], lon: m[1], t: 'rua' });
+  });
+  return lista;
+}
+
+function buscarLocal(q) {
+  var toks = norm(q).split(/[^a-z0-9]+/).filter(function (t) { return t && !PARTICULAS[t]; });
+  if (!toks.length) return [];
+  var centro = marcador ? marcador.getLatLng() : mapa.getCenter(), out = [];
+  indiceBusca.forEach(function (e) {
+    var achou = 0;
+    toks.forEach(function (t) { if (e.k.indexOf(t) >= 0) achou++; });
+    var nec = toks.length === 1 ? 1 : Math.ceil(toks.length / 2);
+    if (achou < nec) return;
+    out.push({ e: e, score: achou / toks.length, d: Rota.haversine(centro.lat, centro.lng, e.lat, e.lon) });
+  });
+  out.sort(function (x, y) { return y.score - x.score || x.d - y.d; });
+  return out.slice(0, 6);
+}
+
+function mostrarAchados(itens) {
+  achados.textContent = '';
+  itens.forEach(function (x) {
+    var b = document.createElement('button');
+    b.textContent = x.nome + (x.tipo ? ' · ' + x.tipo : '') + (x.dist != null ? ' · ' + metros(x.dist) : '');
+    b.addEventListener('click', function () { achados.textContent = ''; definir('destino', x.lat, x.lon); });
+    achados.appendChild(b);
+  });
+}
+
 var campoBusca = document.getElementById('busca'), achados = document.getElementById('achados');
 function buscar() {
   var q = campoBusca.value.trim(); if (!q) return;
   achados.textContent = 'Buscando…';
-  fetch('https://nominatim.openstreetmap.org/search?format=json&limit=5&countrycodes=br&bounded=1&viewbox=-46.12,-23.15,-45.80,-23.45&accept-language=pt-BR&q=' + encodeURIComponent(q))
-    .then(function (r) { if (!r.ok) throw new Error('erro ' + r.status); return r.json(); })
-    .then(function (lista) {
-      achados.textContent = '';
-      if (!lista.length) { achados.textContent = 'Não encontrei esse lugar em Jacareí.'; return; }
-      lista.forEach(function (x) {
-        var b = document.createElement('button');
-        b.textContent = x.display_name.split(',').slice(0, 3).join(',');
-        b.addEventListener('click', function () { achados.textContent = ''; definir('destino', parseFloat(x.lat), parseFloat(x.lon)); });
-        achados.appendChild(b);
-      });
-    })
-    .catch(function (e) { achados.textContent = 'Sem conexão para buscar (' + String(e && e.message || e).slice(0, 30) + ').'; });
+  var pronto = indiceBusca ? Promise.resolve() : fetch('lugares.json?v=1').then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return []; }).then(function (l) { indiceBusca = montarIndice(l); });
+  pronto.then(function () {
+    var locais = buscarLocal(q).map(function (x) { return { nome: x.e.n, tipo: x.e.t, lat: x.e.lat, lon: x.e.lon, dist: x.d }; });
+    if (locais.length >= 3) { mostrarAchados(locais); return; }
+    return fetch('https://nominatim.openstreetmap.org/search?format=json&limit=5&countrycodes=br&bounded=1&viewbox=-46.12,-23.15,-45.80,-23.45&accept-language=pt-BR&q=' + encodeURIComponent(q))
+      .then(function (r) { if (!r.ok) throw new Error('erro ' + r.status); return r.json(); })
+      .then(function (lista) {
+        var extras = lista.map(function (x) { return { nome: x.display_name.split(',').slice(0, 3).join(','), tipo: '', lat: parseFloat(x.lat), lon: parseFloat(x.lon), dist: null }; });
+        var todos = locais.concat(extras);
+        if (!todos.length) achados.textContent = 'Não encontrei esse lugar em Jacareí.'; else mostrarAchados(todos);
+      })
+      .catch(function () { if (locais.length) mostrarAchados(locais); else achados.textContent = 'Não encontrei esse lugar em Jacareí.'; });
+  });
 }
 document.getElementById('buscar').addEventListener('click', buscar);
 campoBusca.addEventListener('keydown', function (e) { if (e.key === 'Enter') buscar(); });

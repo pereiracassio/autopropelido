@@ -2,7 +2,7 @@
 var VERSAO = 'autoprop-v2';
 var TILES = 'autoprop-tiles-v1';
 var BASE = [
-  './', 'index.html', 'rota.js?v=1', 'vias.json?v=2', 'manifest.webmanifest',
+  './', 'index.html', 'rota.js?v=1', 'vias.json?v=2', 'lugares.json?v=1', 'manifest.webmanifest',
   'icone-32.png?v=2', 'icone-48.png?v=2', 'icone-192.png?v=2', 'icone-512.png', 'apple-touch-icon.png',
   'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css',
   'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js'
