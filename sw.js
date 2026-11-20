@@ -1,5 +1,5 @@
 // Deixa o mapa abrir na hora e funcionar mesmo sem internet (as ruas ficam guardadas no aparelho).
-var VERSAO = 'autoprop-v4';
+var VERSAO = 'autoprop-v5';
 var TILES = 'autoprop-tiles-v1';
 var BASE = [
   './', 'index.html', 'rota.js?v=1', 'vias.json?v=2', 'lugares.json?v=1', 'manifest.webmanifest',
@@ -31,10 +31,10 @@ self.addEventListener('fetch', function (e) {
   if (req.method !== 'GET') return;
   var u = new URL(req.url);
   // pedaços do mapa: usa o que já viu e guarda os novos (até 400)
-  if (u.hostname.indexOf('tile.openstreetmap.org') >= 0) {
+  if (u.hostname.indexOf('tile.openstreetmap.org') >= 0 || u.hostname.indexOf('basemaps.cartocdn.com') >= 0) {
     e.respondWith(caches.open(TILES).then(function (c) {
       return c.match(req).then(function (hit) {
-        return hit || fetch(req).then(function (r) { if (r.ok) { c.put(req, r.clone()); limitar(TILES, 400); } return r; });
+        return hit || fetch(req).then(function (r) { if (r.ok) { c.put(req, r.clone()); limitar(TILES, 600); } return r; });
       });
     }));
     return;

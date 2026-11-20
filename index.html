@@ -87,10 +87,12 @@ var NOME = { ciclovia: 'Pode: ciclovia', ciclofaixa: 'Pode: ciclofaixa', via40: 
 
 var mapa = L.map('mapa', { zoomControl: true, renderer: L.canvas({ tolerance: 8 }) }).setView(JACAREI, 15);
 mapa.createPane('gps').style.zIndex = 650;
-L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  maxZoom: 19,
-  attribution: '&copy; OpenStreetMap'
-}).addTo(mapa);
+// fundo do mapa sem os nomes; os nomes das ruas vêm numa camada por cima das linhas, para dar para ler
+var ATRIB = '&copy; OpenStreetMap &copy; CARTO';
+L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png', { maxZoom: 19, subdomains: 'abcd', attribution: ATRIB }).addTo(mapa);
+mapa.createPane('rotulos').style.zIndex = 450;
+mapa.getPane('rotulos').style.pointerEvents = 'none';
+L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png', { maxZoom: 19, subdomains: 'abcd', pane: 'rotulos' }).addTo(mapa);
 
 // uma camada por tipo, na ordem em que são desenhadas (a última fica por cima)
 var camadas = {};
