@@ -2,13 +2,17 @@
 import json, os, subprocess, sys, time, urllib.request, urllib.parse
 
 S, W, N, E = -23.45, -46.12, -23.00, -45.65
-NL, NC = 4, 4
+NL, NC = int(os.environ.get('GRADE', '4')), int(os.environ.get('GRADE', '4'))
 URLS = [
     "https://overpass-api.de/api/interpreter",
     "https://overpass.kumi.systems/api/interpreter",
     "https://overpass.private.coffee/api/interpreter",
 ]
 pontos, vistos, falhas = [], set(), 0
+chaves = set()
+if os.environ.get('SOMAR') and os.path.exists('paraciclos.json'):
+    pontos = json.load(open('paraciclos.json', encoding='utf-8'))
+    chaves = set((x[0], x[1]) for x in pontos)
 
 
 def salvar():
@@ -32,7 +36,7 @@ for a in range(NL):
             try:
                 req = urllib.request.Request(url, data=urllib.parse.urlencode({"data": q}).encode(),
                                              headers={"User-Agent": "autopropelido-dados (github.com/pereiracassio/autopropelido)"})
-                d = json.loads(urllib.request.urlopen(req, timeout=100).read())
+                d = json.loads(urllib.request.urlopen(req, timeout=70).read())
                 for el in d["elements"]:
                     t = el.get("tags", {})
                     if el["type"] == "node":
@@ -44,6 +48,9 @@ for a in range(NL):
                     if lat is None or chave in vistos:
                         continue
                     vistos.add(chave)
+                    if (round(lat, 5), round(lon, 5)) in chaves:
+                        continue
+                    chaves.add((round(lat, 5), round(lon, 5)))
                     pontos.append([round(lat, 5), round(lon, 5), t.get("name", ""), 1 if t.get("covered") == "yes" else 0, t.get("capacity", "")])
                 print("ok", bbox, len(d["elements"]), flush=True)
                 ok = True

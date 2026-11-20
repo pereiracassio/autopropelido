@@ -2,7 +2,7 @@
 import json, os, subprocess, sys, time, urllib.request, urllib.parse
 
 S, W, N, E = -23.45, -46.12, -23.00, -45.65
-NL, NC = 4, 4
+NL, NC = int(os.environ.get('GRADE', '4')), int(os.environ.get('GRADE', '4'))
 URLS = [
     "https://overpass-api.de/api/interpreter",
     "https://overpass.kumi.systems/api/interpreter",
@@ -45,6 +45,10 @@ def tipo_de(t):
 
 
 pontos, vistos, falhas = [], set(), 0
+chaves = set()
+if os.environ.get('SOMAR') and os.path.exists('pontos.json'):
+    pontos = json.load(open('pontos.json', encoding='utf-8'))
+    chaves = set((x['t'], x['la'], x['lo']) for x in pontos)
 
 
 def salvar():
@@ -68,7 +72,7 @@ for a in range(NL):
                 req = urllib.request.Request(
                     url, data=urllib.parse.urlencode({"data": consulta(bbox)}).encode(),
                     headers={"User-Agent": "autopropelido-dados (github.com/pereiracassio/autopropelido)"})
-                d = json.loads(urllib.request.urlopen(req, timeout=100).read())
+                d = json.loads(urllib.request.urlopen(req, timeout=70).read())
                 for el in d["elements"]:
                     t = el.get("tags", {})
                     if el["type"] == "node":
@@ -81,6 +85,9 @@ for a in range(NL):
                     if lat is None or tp is None or chave in vistos:
                         continue
                     vistos.add(chave)
+                    if (tp, round(lat, 5), round(lon, 5)) in chaves:
+                        continue
+                    chaves.add((tp, round(lat, 5), round(lon, 5)))
                     pontos.append({"t": tp, "n": t.get("name", ""), "la": round(lat, 5), "lo": round(lon, 5),
                                    "g": {k: t[k] for k in GUARDAR if k in t or False} | {k: v for k, v in t.items() if k.startswith("service:")}})
                 print("ok", bbox, len(d["elements"]), flush=True)
