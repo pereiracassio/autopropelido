@@ -1,5 +1,5 @@
 // Deixa o mapa abrir na hora e funcionar mesmo sem internet (as ruas ficam guardadas no aparelho).
-var VERSAO = 'autoprop-v9';
+var VERSAO = 'autoprop-v8';
 var TILES = 'autoprop-tiles-v1';
 var BASE = [
   './', 'index.html', 'rota.js?v=2', 'guia.js?v=1', 'vias.json?v=3', 'lugares.json?v=2', 'manifest.webmanifest',
