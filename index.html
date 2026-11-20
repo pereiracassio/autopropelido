@@ -50,6 +50,11 @@
   #painel button { font-size: 15px; padding: 8px 10px; border: 0; border-radius: 6px; background: #7a1fd1; color: #fff; }
   #painel button.leve { background: #eee; color: #222; }
   #achados button { display: block; width: 100%; text-align: left; margin-top: 6px; background: #f3f3f3; color: #222; }
+  #atalhos { display: flex; gap: 6px; overflow-x: auto; margin-top: 6px; }
+  #atalhos button { white-space: nowrap; background: #f3f3f3; color: #222; }
+  #resumo .modos { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+  #resumo .modos button { background: #f3f3f3; color: #222; padding: 6px 10px; font-size: 14px; }
+  #resumo .modos button.ativo { background: #7a1fd1; color: #fff; }
   #resumo .linha-rota { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
   #resumo .guia-instr { font-size: 20px; font-weight: bold; line-height: 1.25; }
   #resumo .guia-resto { flex: 1; color: #555; }
@@ -72,6 +77,7 @@
 <div id="painel">
   <div class="linha" id="linha-busca"><input id="busca" type="search" placeholder="Para onde? (rua, bairro, lugar)" autocomplete="off"><button id="buscar">Buscar</button></div>
   <div id="achados"></div>
+  <div id="atalhos"></div>
   <div id="resumo"></div>
 </div>
 <div id="msg"></div>
@@ -95,7 +101,7 @@
 </button>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-<script src="rota.js?v=3"></script>
+<script src="rota.js?v=4"></script>
 <script src="guia.js?v=2"></script>
 <script>
 var JACAREI = [-23.3053, -45.9658];
@@ -221,7 +227,7 @@ function abrirServico(sv) {
   linha((g.website || g['contact:website']) && (g.website || g['contact:website']));
   linha(g['addr:street'] && (g['addr:street'] + (g['addr:housenumber'] ? ', ' + g['addr:housenumber'] : '')));
   var ir = document.createElement('button'); ir.className = 'acao'; ir.textContent = 'Ir até aqui';
-  ir.addEventListener('click', function () { mapa.closePopup(); definir('destino', sv.la, sv.lo); }); d.appendChild(ir);
+  ir.addEventListener('click', function () { mapa.closePopup(); definir('destino', sv.la, sv.lo, sv.n); }); d.appendChild(ir);
   L.popup().setLatLng([sv.la, sv.lo]).setContent(d).openOn(mapa);
 }
 
@@ -238,9 +244,9 @@ mapa.on('zoomend', atualizarCamadas);
 // ---------- meus lugares (ficam guardados neste aparelho) ----------
 var CHAVE_MEUS = 'autoprop-meus-lugares', camadaMeus = null;
 function lerMeus() { try { return JSON.parse(localStorage.getItem(CHAVE_MEUS) || '[]'); } catch (e) { return []; } }
-function gravarMeus(l) { try { localStorage.setItem(CHAVE_MEUS, JSON.stringify(l)); } catch (e) {} indiceBusca = null; }
+function gravarMeus(l) { try { localStorage.setItem(CHAVE_MEUS, JSON.stringify(l)); } catch (e) {} indiceBusca = null; renderAtalhos(); }
 function salvarLugar(lat, lon) {
-  var nome = window.prompt('Nome do lugar (por exemplo: Smart Fit)');
+  var nome = window.prompt('Nome do lugar (por exemplo: Casa, Trabalho, Smart Fit)');
   if (!nome || !nome.trim()) return;
   var l = lerMeus(); l.push({ n: nome.trim(), lat: lat, lon: lon }); gravarMeus(l); desenharMeus();
 }
@@ -253,7 +259,7 @@ function desenharMeus() {
       .on('click', function () {
         var d = document.createElement('div');
         var t = document.createElement('div'); t.style.fontWeight = 'bold'; t.textContent = m.n; d.appendChild(t);
-        var ir = document.createElement('button'); ir.className = 'acao'; ir.textContent = 'Ir até aqui'; ir.addEventListener('click', function () { mapa.closePopup(); definir('destino', m.lat, m.lon); }); d.appendChild(ir);
+        var ir = document.createElement('button'); ir.className = 'acao'; ir.textContent = 'Ir até aqui'; ir.addEventListener('click', function () { mapa.closePopup(); definir('destino', m.lat, m.lon, m.n); }); d.appendChild(ir);
         var ap = document.createElement('button'); ap.className = 'acao'; ap.style.background = '#999'; ap.textContent = 'Apagar'; ap.addEventListener('click', function () { var l = lerMeus(); l.splice(i, 1); gravarMeus(l); mapa.closePopup(); desenharMeus(); }); d.appendChild(ap);
         L.popup().setLatLng([m.lat, m.lon]).setContent(d).openOn(mapa);
       })
@@ -334,8 +340,9 @@ function pino(letra, cor, ll) {
   return L.marker(ll, { icon: L.divIcon({ className: '', html: '<div class="pino" style="background:' + cor + '">' + letra + '</div>', iconSize: [28, 28], iconAnchor: [14, 14] }) });
 }
 
-function definir(tipo, lat, lon) {
-  if (tipo === 'origem') origem = { lat: lat, lon: lon }; else destino = { lat: lat, lon: lon };
+var destinoNome = null;
+function definir(tipo, lat, lon, nome) {
+  if (tipo === 'origem') origem = { lat: lat, lon: lon }; else { destino = { lat: lat, lon: lon }; destinoNome = nome || null; }
   if (pinos[tipo]) mapa.removeLayer(pinos[tipo]);
   pinos[tipo] = pino(tipo === 'origem' ? 'A' : 'B', tipo === 'origem' ? '#1b8a3a' : '#d11f1f', [lat, lon]).addTo(mapa);
   calcular();
@@ -347,7 +354,7 @@ function limpar() {
   origem = destino = null;
   ['origem', 'destino'].forEach(function (t) { if (pinos[t]) { mapa.removeLayer(pinos[t]); pinos[t] = null; } });
   camadaRota.clearLayers(); resumo.textContent = '';
-  document.getElementById('linha-busca').style.display = 'flex';
+  mostrarBusca(true); destinoNome = null;
 }
 
 function metros(m) { return m >= 1000 ? (m / 1000).toFixed(1).replace('.', ',') + ' km' : Math.round(m / 10) * 10 + ' m'; }
@@ -462,6 +469,40 @@ function textoPiso(pedra, terra) {
   return p.length ? 'Passa por ' + p.join(' e ') + '.' : '';
 }
 
+var MODOS = [['padrao', 'Equilibrada'], ['curta', 'Mais curta'], ['ciclo', 'Mais ciclovia']];
+var modoRota = 'padrao', alternativas = [], ctxRota = null;
+
+function achar(a, b, modo) {
+  var r = Rota.caminho(grafo, a.no, b.no, false, modo);
+  return r || Rota.caminho(grafo, a.no, b.no, true, modo);
+}
+function mostrarBusca(on) {
+  document.getElementById('linha-busca').style.display = on ? 'flex' : 'none';
+  document.getElementById('atalhos').style.display = on && lerMeus().length ? 'flex' : 'none';
+}
+function horaDaChegada(min) {
+  var d = new Date(Date.now() + min * 60000);
+  return String(d.getHours()).padStart(2, '0') + 'h' + String(d.getMinutes()).padStart(2, '0');
+}
+function renderAtalhos() {
+  var el = document.getElementById('atalhos'); el.textContent = '';
+  var l = lerMeus().slice().sort(function (x, y) { var f = function (m) { return /^(casa|trabalho)$/i.test(m.n) ? 0 : 1; }; return f(x) - f(y); }).slice(0, 8);
+  l.forEach(function (m) {
+    var b = document.createElement('button'); b.textContent = m.n;
+    b.addEventListener('click', function () { definir('destino', m.lat, m.lon, m.n); }); el.appendChild(b);
+  });
+  if (document.getElementById('linha-busca').style.display !== 'none') el.style.display = l.length ? 'flex' : 'none';
+}
+
+function compartilhar(minutos, metrosTotal) {
+  if (!destino) return;
+  var nome = destinoNome || 'um ponto no mapa';
+  var url = location.origin + location.pathname + '?d=' + destino.lat.toFixed(5) + ',' + destino.lon.toFixed(5) + '&n=' + encodeURIComponent(nome);
+  var texto = 'Caminho de autopropelido até ' + nome + ': ' + metros(metrosTotal) + ' · ' + minutos + ' min';
+  if (navigator.share) navigator.share({ title: 'Caminho de autopropelido', text: texto, url: url }).catch(function () {});
+  else if (navigator.clipboard) navigator.clipboard.writeText(texto + ' ' + url).then(function () { aviso('Link copiado'); setTimeout(function () { aviso(''); }, 2000); });
+}
+
 function calcular(opcoes) {
   var emGuia = !!(opcoes && opcoes.guia);
   var de = (origem && !emGuia) ? origem : (marcador ? { lat: marcador.getLatLng().lat, lon: marcador.getLatLng().lng } : origem);
@@ -472,14 +513,27 @@ function calcular(opcoes) {
   var a = Rota.maisPerto(grafo, de.lat, de.lon, 500), b = Rota.maisPerto(grafo, destino.lat, destino.lon, 500);
   if (!a) { resumo.textContent = 'Não há rua permitida perto do ponto de saída.'; return; }
   if (!b) { resumo.textContent = 'Não há rua permitida perto do destino.'; return; }
-  var r = Rota.caminho(grafo, a.no, b.no, false);
-  if (!r) r = Rota.caminho(grafo, a.no, b.no, true);
-  if (!r) { resumo.textContent = 'Não achei caminho só por vias permitidas entre esses dois pontos.'; return; }
+  alternativas = [];
+  if (emGuia) { var rg = achar(a, b, modoRota); if (rg) alternativas.push({ modo: modoRota, nome: '', r: rg }); }
+  else MODOS.forEach(function (m) {
+    var r = achar(a, b, m[0]); if (!r) return;
+    var igual = alternativas.some(function (x) { return Math.abs(x.r.metros - r.metros) < Math.max(40, x.r.metros * 0.02); });
+    if (!igual) alternativas.push({ modo: m[0], nome: m[1], r: r });
+  });
+  if (!alternativas.length) { resumo.textContent = 'Não achei caminho só por vias permitidas entre esses dois pontos.'; return; }
+  var esc = alternativas.filter(function (x) { return x.modo === modoRota; })[0] || alternativas[0];
+  modoRota = esc.modo; ctxRota = { de: de, a: a, b: b, emGuia: emGuia }; falados = {};
+  mostrarRota(esc);
+}
+
+function mostrarRota(esc) {
+  var r = esc.r, de = ctxRota.de, a = ctxRota.a, b = ctxRota.b, emGuia = ctxRota.emGuia;
+  camadaRota.clearLayers(); resumo.textContent = '';
   rotaAtual = Guia.preparar(r); rotaAtual.temIncerta = r.temIncerta; rotaAtual.trechos = r.trechos; rotaAtual.pedra = r.pedra; rotaAtual.terra = r.terra;
   rotaAtual.alertas = obstLista.length ? Guia.alertas(rotaAtual, obstLista) : []; progresso = 0; foraConta = 0;
   linhaRota = L.polyline(r.pontos, { color: '#7a1fd1', weight: 7, opacity: .9, pane: 'gps', interactive: false }).addTo(camadaRota);
   achados.textContent = '';
-  document.getElementById('linha-busca').style.display = 'none';
+  mostrarBusca(false);
   if (emGuia) { desenharGuia(); return; }
   [[de, a], [destino, b]].forEach(function (x) {
     if (x[1].dist > 15) L.polyline([[x[0].lat, x[0].lon], [grafo.lat[x[1].no], grafo.lon[x[1].no]]], { color: '#7a1fd1', weight: 3, dashArray: '4 6', pane: 'gps', interactive: false }).addTo(camadaRota);
@@ -487,14 +541,23 @@ function calcular(opcoes) {
   var min = Math.max(1, Math.round(r.metros / 1000 / VELOCIDADE_KMH * 60));
   var t = document.createElement('div');
   var linha = document.createElement('div'); linha.className = 'linha-rota';
-  var soma = document.createElement('span'); soma.className = 'soma'; soma.textContent = metros(r.metros) + ' · ' + min + ' min'; linha.appendChild(soma);
+  var soma = document.createElement('span'); soma.className = 'soma'; soma.textContent = metros(r.metros) + ' · ' + min + ' min · chega ' + horaDaChegada(min); linha.appendChild(soma);
   var lista = document.createElement('div'); lista.className = 'lista-ruas'; lista.style.display = 'none';
   r.trechos.forEach(function (z) { var li = document.createElement('div'); li.textContent = z.nome + ' · ' + metros(z.metros); lista.appendChild(li); });
   var ruas = document.createElement('button'); ruas.className = 'leve'; ruas.textContent = 'Ruas';
   ruas.addEventListener('click', function () { lista.style.display = lista.style.display === 'none' ? 'block' : 'none'; });
   var ir = document.createElement('button'); ir.textContent = 'Iniciar'; ir.addEventListener('click', iniciarGuia);
+  var env = document.createElement('button'); env.className = 'leve'; env.textContent = 'Enviar'; env.addEventListener('click', function () { compartilhar(min, r.metros); });
   var lim = document.createElement('button'); lim.className = 'leve'; lim.textContent = 'Limpar'; lim.addEventListener('click', limpar);
-  linha.appendChild(ir); linha.appendChild(ruas); linha.appendChild(lim); t.appendChild(linha);
+  linha.appendChild(ir); linha.appendChild(ruas); linha.appendChild(env); linha.appendChild(lim); t.appendChild(linha);
+  if (alternativas.length > 1) {
+    var mo = document.createElement('div'); mo.className = 'modos';
+    alternativas.forEach(function (x) {
+      var bt = document.createElement('button'); bt.textContent = x.nome + ' ' + metros(x.r.metros); if (x === esc) bt.className = 'ativo';
+      bt.addEventListener('click', function () { modoRota = x.modo; mostrarRota(x); }); mo.appendChild(bt);
+    });
+    t.appendChild(mo);
+  }
   if (r.temIncerta) { var l2 = document.createElement('div'); l2.className = 'aviso-rota'; l2.textContent = 'Passa por trecho sem velocidade marcada: confira a placa.'; t.appendChild(l2); }
   var pisoTxt = textoPiso(r.pedra, r.terra);
   if (pisoTxt) { var l3 = document.createElement('div'); l3.className = 'aviso-rota'; l3.textContent = pisoTxt; t.appendChild(l3); }
@@ -503,6 +566,16 @@ function calcular(opcoes) {
   mapa.fitBounds(L.latLngBounds(r.pontos).extend([de.lat, de.lon]).extend([destino.lat, destino.lon]), { paddingTopLeft: [20, 90], paddingBottomRight: [20, 80] });
 }
 
+// ---------- voz ----------
+var vozLigada = (function () { try { return localStorage.getItem('autoprop-voz') !== 'nao'; } catch (e) { return true; } })(), falados = {};
+function falar(t) {
+  if (!vozLigada || !window.speechSynthesis) return;
+  try { speechSynthesis.cancel(); var u = new SpeechSynthesisUtterance(t); u.lang = 'pt-BR'; u.rate = 1.05; speechSynthesis.speak(u); } catch (e) {}
+}
+function destravarVoz() { try { if (window.speechSynthesis) speechSynthesis.speak(new SpeechSynthesisUtterance('')); } catch (e) {} }
+function aprox(m) { return m < 100 ? '100 metros' : (Math.round(m / 50) * 50) + ' metros'; }
+function minuscula(t) { return t.charAt(0).toLowerCase() + t.slice(1); }
+
 // ---------- guia passo a passo ----------
 function desenharGuia() {
   resumo.textContent = '';
@@ -510,8 +583,10 @@ function desenharGuia() {
   var instr = document.createElement('div'); instr.className = 'guia-instr'; instr.id = 'guia-instr'; t.appendChild(instr);
   var linha = document.createElement('div'); linha.className = 'linha-rota'; linha.style.marginTop = '6px';
   var resto = document.createElement('span'); resto.className = 'guia-resto'; resto.id = 'guia-resto'; linha.appendChild(resto);
+  var voz = document.createElement('button'); voz.className = 'leve'; voz.textContent = vozLigada ? '🔊' : '🔇';
+  voz.addEventListener('click', function () { vozLigada = !vozLigada; voz.textContent = vozLigada ? '🔊' : '🔇'; try { localStorage.setItem('autoprop-voz', vozLigada ? 'sim' : 'nao'); } catch (e) {} if (!vozLigada && window.speechSynthesis) speechSynthesis.cancel(); });
   var parar = document.createElement('button'); parar.className = 'leve'; parar.textContent = 'Parar'; parar.addEventListener('click', pararGuia);
-  linha.appendChild(parar); t.appendChild(linha);
+  linha.appendChild(voz); linha.appendChild(parar); t.appendChild(linha);
   if (rotaAtual.temIncerta) { var l2 = document.createElement('div'); l2.className = 'aviso-rota'; l2.textContent = 'Tem trecho sem velocidade marcada: confira a placa.'; t.appendChild(l2); }
   var al = document.createElement('div'); al.className = 'aviso-rota'; al.id = 'guia-alerta'; al.style.fontWeight = 'bold'; t.appendChild(al);
   resumo.appendChild(t);
@@ -526,11 +601,19 @@ function textoGuia(passo, along) {
   if (passo.texto === 'Você chegou') i.textContent = falta < 25 ? 'Você chegou' : 'Siga em frente, o destino está a ' + metros(falta);
   else i.textContent = passo.texto + (falta < 15 ? ' agora' : ' em ' + metros(falta));
   var resta = Math.max(0, rotaAtual.total - along);
-  r.textContent = metros(resta) + ' · ' + Math.max(1, Math.round(resta / 1000 / VELOCIDADE_KMH * 60)) + ' min';
+  var minRest = Math.max(1, Math.round(resta / 1000 / VELOCIDADE_KMH * 60));
+  r.textContent = metros(resta) + ' · ' + minRest + ' min · chega ' + horaDaChegada(minRest);
+  // falas: avisa a ~250 m e de novo perto da esquina
+  var k = 'p' + passo.i;
+  if (passo.texto === 'Você chegou') { if (falta < 25 && !falados.fim) { falados.fim = 1; falar('Você chegou ao destino'); } }
+  else if (/^Siga em frente/.test(passo.texto)) { /* continuar na mesma direção não precisa de aviso */ }
+  else if (falta <= 40 && (falados[k] || 0) < 2) { falados[k] = 2; falar(passo.texto); }
+  else if (falta <= 250 && falta > 60 && !falados[k]) { falados[k] = 1; falar('Em ' + aprox(falta) + ', ' + minuscula(passo.texto)); }
   var al = document.getElementById('guia-alerta');
   if (al) {
     var prox = (rotaAtual.alertas || []).filter(function (a) { return a.along - along > -5 && a.along - along < 300; })[0];
     al.textContent = prox ? prox.texto + (prox.along - along < 15 ? ' agora' : ' em ' + metros(prox.along - along)) : '';
+    if (prox && prox.along - along <= 120 && !falados['a' + Math.round(prox.along)]) { falados['a' + Math.round(prox.along)] = 1; falar(prox.texto + ' em ' + (Math.round((prox.along - along) / 10) * 10) + ' metros'); }
   }
 }
 
@@ -538,7 +621,7 @@ function iniciarGuia() {
   if (!rotaAtual || !marcador) { aviso('Ligue o GPS para usar o guia'); return; }
   guiando = true;
   if (origem) { origem = null; if (pinos.origem) { mapa.removeLayer(pinos.origem); pinos.origem = null; } }
-  pedirBussola();
+  pedirBussola(); destravarVoz();
   try { if (navigator.wakeLock) navigator.wakeLock.request('screen').then(function (w) { travaTela = w; }).catch(function () {}); } catch (e) {}
   calcular({ guia: true });
   entrarNavegacao();
@@ -562,6 +645,7 @@ function atualizarGuia(ll, precisao) {
   if (linhaRota) linhaRota.setLatLngs([[pr.lat, pr.lon]].concat(rotaAtual.pts.slice(pr.seg + 1)));
   if (rotaAtual.total - pr.along < 25) {
     var i = document.getElementById('guia-instr'); if (i) i.textContent = 'Você chegou';
+    falar('Você chegou ao destino');
     var r = document.getElementById('guia-resto'); if (r) r.textContent = '';
     guiando = false; sairNavegacao(); if (travaTela) { try { travaTela.release(); } catch (e) {} travaTela = null; }
     return;
@@ -615,7 +699,7 @@ function mostrarAchados(itens) {
   itens.forEach(function (x) {
     var b = document.createElement('button');
     b.textContent = x.nome + (x.tipo ? ' · ' + x.tipo : '') + (x.dist != null ? ' · ' + metros(x.dist) : '');
-    b.addEventListener('click', function () { achados.textContent = ''; definir('destino', x.lat, x.lon); });
+    b.addEventListener('click', function () { achados.textContent = ''; definir('destino', x.lat, x.lon, x.nome); });
     achados.appendChild(b);
   });
   var fechar = document.createElement('button'); fechar.className = 'leve'; fechar.textContent = 'Fechar'; fechar.style.marginTop = '6px';
@@ -684,7 +768,13 @@ document.getElementById('gps').addEventListener('click', function () {
   else { primeiraVez = true; iniciarGps(); }
 });
 iniciarGps();
-desenharMeus();
+desenharMeus(); renderAtalhos(); mostrarBusca(true);
+(function () {
+  try {
+    var q = new URLSearchParams(location.search), d = (q.get('d') || '').split(',').map(parseFloat);
+    if (d.length === 2 && !isNaN(d[0]) && !isNaN(d[1])) definir('destino', d[0], d[1], q.get('n') || null);
+  } catch (e) {}
+})();
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(function () {});
 </script>
 </body>

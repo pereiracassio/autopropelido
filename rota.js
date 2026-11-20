@@ -47,13 +47,14 @@
       var s = sentido(v.t);
       var wi = nomes.length; nomes.push(v.t.name || '');
       var piso = pisoDe(v.t); pisos.push(piso);
-      peso *= piso === 'pedra' ? 1.5 : piso === 'terra' ? 2.2 : 1;
+      var pm = piso === 'pedra' ? 1.5 : piso === 'terra' ? 2.2 : 1;
+      peso *= pm;
       for (var k = 0; k + 1 < v.g.length; k++) {
         var a = no(v.g[k]), b = no(v.g[k + 1]);
         if (a === b) continue;
         var d = haversine(lat[a], lon[a], lat[b], lon[b]);
-        if (s >= 0) adj[a].push({ to: b, d: d, w: d * peso, via: wi, inc: inc });
-        if (s <= 0) adj[b].push({ to: a, d: d, w: d * peso, via: wi, inc: inc });
+        if (s >= 0) adj[a].push({ to: b, d: d, w: d * peso, via: wi, inc: inc, tp: tipo, pm: pm });
+        if (s <= 0) adj[b].push({ to: a, d: d, w: d * peso, via: wi, inc: inc, tp: tipo, pm: pm });
       }
     });
     // maior pedaço conectado (ignorando o sentido), para não ligar o ponto a uma ruazinha isolada
@@ -115,11 +116,20 @@
   };
 
   // A*. permitirIncerta: usa também os trechos sem velocidade marcada
-  function caminho(G, de, para, permitirIncerta) {
+  // modo: 'padrao' (equilibrado), 'curta' (só a distância) ou 'ciclo' (prefere ciclovia e ciclofaixa)
+  var CICLO = { ciclovia: 0.45, ciclofaixa: 0.65, via40: 1.1, incerta: 1.6 };
+  function pesoDe(e, modo) {
+    if (modo === 'curta') return e.d;
+    if (modo === 'ciclo') return e.d * (CICLO[e.tp] || 1) * e.pm;
+    return e.w;
+  }
+
+  function caminho(G, de, para, permitirIncerta, modo) {
     var N = G.lat.length;
     var g = new Float64Array(N).fill(Infinity), antes = new Int32Array(N).fill(-1), viaAntes = new Int32Array(N).fill(-1), fechado = new Uint8Array(N);
     var h = new Heap();
-    g[de] = 0; h.push(haversine(G.lat[de], G.lon[de], G.lat[para], G.lon[para]) * 0.85, de);
+    g[de] = 0; var HF = modo === 'ciclo' ? 0.45 : modo === 'curta' ? 1 : 0.85;
+    h.push(haversine(G.lat[de], G.lon[de], G.lat[para], G.lon[para]) * HF, de);
     while (h.a.length) {
       var u = h.pop()[1];
       if (fechado[u]) continue;
@@ -129,10 +139,10 @@
       for (var i = 0; i < lista.length; i++) {
         var e = lista[i];
         if (e.inc && !permitirIncerta) continue;
-        var ng = g[u] + e.w;
+        var ng = g[u] + pesoDe(e, modo);
         if (ng < g[e.to]) {
           g[e.to] = ng; antes[e.to] = u; viaAntes[e.to] = e.via;
-          h.push(ng + haversine(G.lat[e.to], G.lon[e.to], G.lat[para], G.lon[para]) * 0.85, e.to);
+          h.push(ng + haversine(G.lat[e.to], G.lon[e.to], G.lat[para], G.lon[para]) * HF, e.to);
         }
       }
     }
