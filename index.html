@@ -17,7 +17,10 @@
 <link rel="shortcut icon" href="icone-32.png?v=2">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <style>
-  html, body { margin: 0; height: 100%; font-family: system-ui, sans-serif; }
+  html, body { margin: 0; height: 100%; font-family: system-ui, sans-serif; overflow: hidden; }
+  #atrib { position: absolute; z-index: 900; right: 4px; bottom: 2px; font-size: 10px; background: rgba(255,255,255,.75); padding: 1px 4px; }
+  #bussola { display: none; }
+  #seta { width: 36px; height: 36px; }
   #mapa { position: absolute; inset: 0; }
   #legenda {
     display: none;
@@ -32,6 +35,7 @@
     display: flex; align-items: center; justify-content: center;
   }
   #gps { right: 12px; }
+  #bussola { position: absolute; z-index: 1000; right: 12px; bottom: 84px; width: 48px; height: 48px; padding: 0; background: #fff; border: 0; border-radius: 50%; box-shadow: 0 1px 6px rgba(0,0,0,.35); align-items: center; justify-content: center; }
   #btn-legenda { left: 12px; }
   #painel {
     position: absolute; z-index: 1000; top: 12px; left: 56px; right: 12px; max-width: 440px;
@@ -60,6 +64,7 @@
 </head>
 <body>
 <div id="mapa"></div>
+<div id="atrib">&copy; OpenStreetMap &copy; CARTO · Leaflet</div>
 <div id="painel">
   <div class="linha" id="linha-busca"><input id="busca" type="search" placeholder="Para onde? (rua, bairro, lugar)" autocomplete="off"><button id="buscar">Buscar</button></div>
   <div id="achados"></div>
@@ -76,6 +81,7 @@
 <button id="btn-legenda" aria-label="Mostrar ou esconder o que cada cor significa">
   <svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke-width="3.5" stroke-linecap="round"><path d="M4 5h18" stroke="#1b8a3a"/><path d="M4 11h18" stroke="#1f6fd1"/><path d="M4 17h18" stroke="#d4a900"/><path d="M4 23h18" stroke="#d11f1f"/></svg>
 </button>
+<button id="bussola" aria-label="Alternar entre norte para cima e direção para cima"><svg id="agulha" width="30" height="30" viewBox="0 0 30 30"><path d="M15 3 L21 15 H9 Z" fill="#d11f1f"/><path d="M15 27 L21 15 H9 Z" fill="#999"/><circle cx="15" cy="15" r="2" fill="#fff"/></svg></button>
 <button id="gps" aria-label="Ir para a minha localização">
   <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#7a1fd1" stroke-width="2.6" stroke-linecap="round"><circle cx="14" cy="14" r="7"/><circle cx="14" cy="14" r="2.5" fill="#7a1fd1"/><path d="M14 2v4M14 22v4M2 14h4M22 14h4"/></svg>
 </button>
@@ -88,7 +94,7 @@ var JACAREI = [-23.3053, -45.9658];
 var COR = { ciclovia: '#0d6b2e', ciclofaixa: '#6fd17a', via40: '#1f6fd1', incerta: '#d4a900', nao: '#d11f1f' };
 var NOME = { ciclovia: 'Pode: ciclovia', ciclofaixa: 'Pode: ciclofaixa', via40: 'Pode: rua de até 40 km/h', incerta: 'Velocidade não marcada: confira a placa', nao: 'Não pode: mais de 40 km/h' };
 
-var mapa = L.map('mapa', { zoomControl: true, renderer: L.canvas({ tolerance: 8 }) }).setView(JACAREI, 15);
+var mapa = L.map('mapa', { zoomControl: true, attributionControl: false, renderer: L.canvas({ tolerance: 8 }) }).setView(JACAREI, 15);
 mapa.createPane('gps').style.zIndex = 650;
 // fundo do mapa sem os nomes; os nomes das ruas vêm numa camada por cima das linhas, para dar para ler
 var ATRIB = '&copy; OpenStreetMap &copy; CARTO';
@@ -217,6 +223,7 @@ function definir(tipo, lat, lon) {
 }
 
 function limpar() {
+  if (guiando) sairNavegacao();
   guiando = false; if (travaTela) { try { travaTela.release(); } catch (e) {} travaTela = null; }
   origem = destino = null;
   ['origem', 'destino'].forEach(function (t) { if (pinos[t]) { mapa.removeLayer(pinos[t]); pinos[t] = null; } });
@@ -225,6 +232,93 @@ function limpar() {
 }
 
 function metros(m) { return m >= 1000 ? (m / 1000).toFixed(1).replace('.', ',') + ' km' : Math.round(m / 10) * 10 + ' m'; }
+
+
+// ---------- bússola e mapa que gira ----------
+var orientacao = 'rumo';            // 'rumo' = direção para cima (como no Google Maps); 'norte' = norte para cima
+var rumoCss = null, giroPendente = false, ultimoLL = null, ultimoGps = 0, seta = null, bussolaLigada = false;
+var elMapa = document.getElementById('mapa'), elAgulha = document.getElementById('agulha'), elBussola = document.getElementById('bussola');
+
+function definirRumo(h, fonte) {
+  if (h == null || isNaN(h)) return;
+  if (fonte === 'bussola' && Date.now() - ultimoGps < 4000) return; // andando, vale o rumo do GPS
+  if (fonte === 'gps') ultimoGps = Date.now();
+  if (rumoCss === null) rumoCss = h;
+  else { var d = ((h - rumoCss) % 360 + 540) % 360 - 180; rumoCss += d * 0.35; }
+  if (!giroPendente) { giroPendente = true; requestAnimationFrame(function () { giroPendente = false; aplicarGiro(); }); }
+}
+
+function centrarNaPosicao() {
+  if (!ultimoLL) return;
+  var z = mapa.getZoom(), off = orientacao === 'rumo' ? window.innerHeight * 0.22 : 0;
+  var pt = mapa.project(L.latLng(ultimoLL), z), h = (rumoCss || 0) * Math.PI / 180;
+  if (orientacao === 'rumo') pt = pt.add([Math.sin(h) * off, -Math.cos(h) * off]);
+  mapa.setView(mapa.unproject(pt, z), z, { animate: false });
+}
+
+function aplicarGiro() {
+  if (seta && rumoCss !== null) { var el = seta.getElement(); if (el && el.firstChild) el.firstChild.style.transform = 'rotate(' + rumoCss + 'deg)'; }
+  if (!guiando) return;
+  var gira = orientacao === 'rumo' && rumoCss !== null;
+  elAgulha.style.transform = gira ? 'rotate(' + (-rumoCss) + 'deg)' : 'none';
+  elMapa.style.transform = gira ? 'rotate(' + (-rumoCss) + 'deg)' : 'none';
+  centrarNaPosicao();
+}
+
+function prepararMapa(girando) {
+  if (girando) {
+    var D = Math.ceil(Math.hypot(window.innerWidth, window.innerHeight));
+    elMapa.style.inset = 'auto'; elMapa.style.width = D + 'px'; elMapa.style.height = D + 'px';
+    elMapa.style.left = ((window.innerWidth - D) / 2) + 'px'; elMapa.style.top = ((window.innerHeight - D) / 2) + 'px';
+    elMapa.style.transition = 'transform .25s linear';
+  } else {
+    elMapa.style.inset = '0'; elMapa.style.width = ''; elMapa.style.height = ''; elMapa.style.left = ''; elMapa.style.top = '';
+    elMapa.style.transform = 'none'; elMapa.style.transition = '';
+  }
+  ['dragging', 'touchZoom', 'doubleClickZoom', 'scrollWheelZoom', 'boxZoom'].forEach(function (k) { if (mapa[k]) girando ? mapa[k].disable() : mapa[k].enable(); });
+  var zc = document.querySelector('.leaflet-control-zoom'); if (zc) zc.style.display = girando ? 'none' : '';
+  mapa.getPane('rotulos').style.display = girando ? 'none' : ''; // o texto das ruas giraria junto e ficaria de cabeça para baixo
+  mapa.invalidateSize({ animate: false });
+}
+
+function ligarBussola() {
+  if (bussolaLigada) return; bussolaLigada = true;
+  function ao(e) {
+    var h = null;
+    if (typeof e.webkitCompassHeading === 'number') h = e.webkitCompassHeading;
+    else if (e.absolute && e.alpha != null) h = 360 - e.alpha;
+    if (h === null) return;
+    var ang = (screen.orientation && screen.orientation.angle) || 0;
+    definirRumo((h + ang + 360) % 360, 'bussola');
+  }
+  window.addEventListener('deviceorientationabsolute', ao, true);
+  window.addEventListener('deviceorientation', ao, true);
+}
+function pedirBussola() {
+  ligarBussola(); // sem permissão os eventos simplesmente não chegam; com permissão passam a chegar
+  try {
+    if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') DeviceOrientationEvent.requestPermission().catch(function () {});
+  } catch (e) {}
+}
+
+function entrarNavegacao() {
+  orientacao = 'rumo'; elBussola.style.display = 'flex';
+  prepararMapa(true);
+  if (mapa.getZoom() < 18) mapa.setZoom(18, { animate: false });
+  aplicarGiro();
+}
+function sairNavegacao() {
+  elBussola.style.display = 'none'; orientacao = 'rumo';
+  prepararMapa(false); elAgulha.style.transform = 'none';
+  if (ultimoLL) mapa.setView(ultimoLL, Math.min(mapa.getZoom(), 17), { animate: false });
+}
+elBussola.addEventListener('click', function () {
+  orientacao = orientacao === 'rumo' ? 'norte' : 'rumo';
+  prepararMapa(orientacao === 'rumo');
+  if (orientacao === 'norte') { elAgulha.style.transform = 'none'; elMapa.style.transform = 'none'; }
+  aplicarGiro();
+});
+window.addEventListener('resize', function () { if (guiando && orientacao === 'rumo') { prepararMapa(true); aplicarGiro(); } });
 
 var guiando = false, rotaAtual = null, linhaRota = null, progresso = 0, foraConta = 0, travaTela = null;
 
@@ -296,12 +390,14 @@ function iniciarGuia() {
   if (!rotaAtual || !marcador) { aviso('Ligue o GPS para usar o guia'); return; }
   guiando = true;
   if (origem) { origem = null; if (pinos.origem) { mapa.removeLayer(pinos.origem); pinos.origem = null; } }
+  pedirBussola();
   try { if (navigator.wakeLock) navigator.wakeLock.request('screen').then(function (w) { travaTela = w; }).catch(function () {}); } catch (e) {}
   calcular({ guia: true });
+  entrarNavegacao();
 }
 
 function pararGuia() {
-  guiando = false;
+  guiando = false; sairNavegacao();
   if (travaTela) { try { travaTela.release(); } catch (e) {} travaTela = null; }
   calcular();
 }
@@ -319,11 +415,11 @@ function atualizarGuia(ll, precisao) {
   if (rotaAtual.total - pr.along < 25) {
     var i = document.getElementById('guia-instr'); if (i) i.textContent = 'Você chegou';
     var r = document.getElementById('guia-resto'); if (r) r.textContent = '';
-    guiando = false; if (travaTela) { try { travaTela.release(); } catch (e) {} travaTela = null; }
+    guiando = false; sairNavegacao(); if (travaTela) { try { travaTela.release(); } catch (e) {} travaTela = null; }
     return;
   }
   textoGuia(Guia.proximo(rotaAtual, pr.seg), pr.along);
-  mapa.panTo(ll, { animate: true });
+  centrarNaPosicao();
 }
 
 // busca de lugar: primeiro nos lugares e ruas guardados de Jacareí, depois no Nominatim
@@ -394,6 +490,12 @@ campoBusca.addEventListener('keydown', function (e) { if (e.key === 'Enter') bus
 var marcador = null, circulo = null, primeiraVez = true;
 function posicao(p) {
   var ll = [p.coords.latitude, p.coords.longitude];
+  ultimoLL = ll;
+  if (p.coords.speed > 1.2 && typeof p.coords.heading === 'number' && !isNaN(p.coords.heading)) definirRumo(p.coords.heading, 'gps');
+  if (guiando) {
+    if (!seta) seta = L.marker(ll, { icon: L.divIcon({ className: '', html: '<svg id="seta" width="36" height="36" viewBox="0 0 36 36"><path d="M18 3 L28 30 L18 24 L8 30 Z" fill="#7a1fd1" stroke="#fff" stroke-width="2"/></svg>', iconSize: [36, 36], iconAnchor: [18, 18] }), interactive: false, keyboard: false }).addTo(mapa);
+    seta.setLatLng(ll);
+  } else if (seta) { mapa.removeLayer(seta); seta = null; }
   if (!marcador) {
     circulo = L.circle(ll, { radius: p.coords.accuracy, color: '#d11f1f', weight: 1, fillOpacity: .08, pane: 'gps', interactive: false }).addTo(mapa);
     marcador = L.circleMarker(ll, { radius: 8, color: '#fff', weight: 3, fillColor: '#7a1fd1', fillOpacity: 1, pane: 'gps', interactive: false }).addTo(mapa);
