@@ -1,0 +1,22 @@
+name: Lugares de São José dos Campos
+
+on:
+  push:
+    branches: [claude/jolly-davinci-8uissp]
+    paths: [.github/workflows/sao-jose-lugares.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  baixar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    steps:
+      - uses: actions/checkout@v4
+      - name: Baixar
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          REGIAO="-23.15,-46.12,-23.00,-45.65" GRADE_L=2 GRADE_C=6 python3 scripts/baixar-lugares.py || true
+          REGIAO="-23.45,-45.80,-23.15,-45.65" GRADE_L=4 GRADE_C=2 python3 scripts/baixar-lugares.py || true

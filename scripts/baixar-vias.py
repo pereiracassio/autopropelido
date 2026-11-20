@@ -2,7 +2,10 @@
 import json, os, subprocess, sys, time, urllib.request, urllib.parse
 
 S, W, N, E = -23.45, -46.12, -23.15, -45.80
-NL, NC = 4, 4
+NL, NC = int(os.environ.get('GRADE_L', '4')), int(os.environ.get('GRADE_C', '4'))
+REGIAO = os.environ.get('REGIAO')
+if REGIAO:
+    S, W, N, E = [float(x) for x in REGIAO.split(',')]
 URLS = [
     "https://overpass-api.de/api/interpreter",
     "https://overpass.kumi.systems/api/interpreter",
@@ -22,7 +25,7 @@ vistos, vias, falhas = set(), [], 0
 # SO="1,1;1,2" refaz só esses pedaços (grade 4x4), cada um dividido em SUB x SUB, e soma ao vias.json que já existe
 SO = [tuple(map(int, t.split(","))) for t in os.environ.get("SO", "").split(";") if t]
 SUB = int(os.environ.get("SUB", "1"))
-if SO and os.path.exists("vias.json"):
+if (SO or REGIAO) and os.path.exists("vias.json"):
     vias = json.load(open("vias.json", encoding="utf-8"))
     vistos = set(v["i"] for v in vias)
 
