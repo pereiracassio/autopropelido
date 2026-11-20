@@ -114,21 +114,16 @@ function classificar(tags, nomes) {
   if (lane) return { tipo: 'ciclofaixa', motivo: 'Tem ciclofaixa na rua (cycleway=lane).' };
   var base = hw.replace(/_link$/, '');
   var ms = velocidade(tags.maxspeed);
-  // rua local ou coletora: velocidade acima de 40 sem placa registrada costuma ser chute de quem mapeou
-  var duvidosa = /^(residential|living_street|unclassified|tertiary)$/.test(base) && tags['maxspeed:type'] !== 'sign';
   if (ms !== null) {
-    if (ms <= 40) return { tipo: 'via40', motivo: 'Velocidade marcada no mapa: ' + ms + ' km/h.' };
-    if (duvidosa) return { tipo: 'incerta', motivo: 'O mapa marca ' + ms + ' km/h, mas é rua local ou coletora (30 a 40 km/h pelo CTB) e a placa não está registrada: confira na rua.' };
-    return { tipo: 'nao', motivo: 'Velocidade marcada no mapa: ' + ms + ' km/h (acima de 40).' };
+    return ms <= 40
+      ? { tipo: 'via40', motivo: 'Velocidade marcada no mapa: ' + ms + ' km/h.' }
+      : { tipo: 'nao', motivo: 'Velocidade marcada no mapa: ' + ms + ' km/h (acima de 40).' };
   }
   // sem velocidade marcada neste trecho: olha os outros trechos da mesma rua
   var n = nomes && tags.name && nomes[tags.name];
   if (n) {
     if (n.max <= 40) return { tipo: 'via40', motivo: 'Sem velocidade marcada neste trecho, mas os outros trechos da mesma rua estão marcados com ' + n.max + ' km/h.' };
-    if (n.min > 40) {
-      if (/^(residential|living_street|unclassified|tertiary)$/.test(base)) return { tipo: 'incerta', motivo: 'Outros trechos desta rua estão marcados com ' + n.min + ' km/h no mapa, mas é rua local ou coletora: confira a placa.' };
-      return { tipo: 'nao', motivo: 'Sem velocidade marcada neste trecho, mas os outros trechos da mesma rua estão marcados com ' + n.min + ' km/h.' };
-    }
+    if (n.min > 40) return { tipo: 'nao', motivo: 'Sem velocidade marcada neste trecho, mas os outros trechos da mesma rua estão marcados com ' + n.min + ' km/h.' };
   }
   // sem nenhuma marcação: vale o CTB, art. 61, nas ruas que são claramente locais ou coletoras
   if (/^(residential|living_street|unclassified)$/.test(base)) return { tipo: 'via40', motivo: 'Sem velocidade marcada. Via local: 30 km/h pelo CTB.' };
