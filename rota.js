@@ -173,6 +173,25 @@
     return { pontos: pts, metros: total, trechos: trechos, temIncerta: inc, segNomes: segNomes, pedra: pedra, terra: terra, proibido: proibido, segProib: segProib };
   }
 
-  var API = { pisoDe: pisoDe, construir: construir, maisPerto: maisPerto, caminho: caminho, haversine: haversine };
+  // distâncias (m) de 'de' a tudo que dá para alcançar só por vias permitidas (Infinity = não alcança)
+  function alcancaveis(G, de) {
+    var N = G.lat.length, g = new Float64Array(N).fill(Infinity), fechado = new Uint8Array(N), h = new Heap();
+    g[de] = 0; h.push(0, de);
+    while (h.a.length) {
+      var u = h.pop()[1];
+      if (fechado[u]) continue;
+      fechado[u] = 1;
+      var lista = G.adj[u];
+      for (var i = 0; i < lista.length; i++) {
+        var e = lista[i];
+        if (e.pr) continue;
+        var ng = g[u] + e.d;
+        if (ng < g[e.to]) { g[e.to] = ng; h.push(ng, e.to); }
+      }
+    }
+    return g;
+  }
+
+  var API = { alcancaveis: alcancaveis, pisoDe: pisoDe, construir: construir, maisPerto: maisPerto, caminho: caminho, haversine: haversine };
   if (typeof module !== 'undefined' && module.exports) module.exports = API; else raiz.Rota = API;
 })(typeof window !== 'undefined' ? window : this);

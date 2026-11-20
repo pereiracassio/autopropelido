@@ -101,7 +101,7 @@
 </button>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-<script src="rota.js?v=5"></script>
+<script src="rota.js?v=6"></script>
 <script src="guia.js?v=2"></script>
 <script>
 var JACAREI = [-23.3053, -45.9658];
@@ -169,7 +169,7 @@ function acoes(latlng) {
 
 
 // ---------- pontos: recarga, consertos, lombadas e semáforos ----------
-var servicosLista = [], obstLista = [], camadaServ = L.layerGroup(), camadaObst = L.layerGroup();
+var paraciclosLista = [], servicosLista = [], obstLista = [], camadaServ = L.layerGroup(), camadaObst = L.layerGroup();
 var RE_ELET = /patinete|scooter|autopropel|e-?bike|monociclo|(bike|bicicleta|moto|motocicleta)s? ?el[eé]tric/i;
 var ROTULO = { recarga: 'recarga', eletrico: 'conserta elétricos (provável)', outras: 'oficina' };
 var PALAVRAS = { recarga: 'recarga recarregar carregar carregador bateria eletrica', eletrico: 'conserto consertar oficina assistencia patinete autopropelido scooter bike eletrica eletrico', outras: 'conserto consertar oficina bicicletaria bicicleta moto' };
@@ -185,8 +185,9 @@ function textoObst(p) {
 
 function carregarPontos() {
   var pega = function (u) { return fetch(u).then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return []; }); };
-  Promise.all([pega('pontos.json?v=1'), pega('lugares.json?v=2')]).then(function (res) {
+  Promise.all([pega('pontos.json?v=1'), pega('lugares.json?v=2'), pega('paraciclos.json?v=1')]).then(function (res) {
     var pts = res[0], lug = res[1];
+    paraciclosLista = res[2].map(function (x) { return { la: x[0], lo: x[1], n: x[2] || 'Paraciclo' }; });
     servicosLista = []; obstLista = [];
     pts.forEach(function (p) {
       if (p.t === 'lombada' || p.t === 'semaforo') { obstLista.push({ la: p.la, lo: p.lo, texto: textoObst(p), p: p }); return; }
@@ -480,6 +481,28 @@ function achar(a, b, modo) {
   var r = Rota.caminho(grafo, a.no, b.no, false, modo);
   return r || Rota.caminho(grafo, a.no, b.no, true, modo);
 }
+// quando não há caminho permitido até o destino: acha onde deixar o autopropelido (paraciclo ou o ponto permitido mais perto) e seguir a pé
+function acharEstacionamento(a, dest) {
+  var dist = Rota.alcancaveis(grafo, a.no), melhorNo = -1, md = Infinity, i;
+  for (i = 0; i < dist.length; i++) {
+    if (dist[i] === Infinity) continue;
+    var d = Rota.haversine(dest.lat, dest.lon, grafo.lat[i], grafo.lon[i]);
+    if (d < md) { md = d; melhorNo = i; }
+  }
+  var esc = melhorNo >= 0 ? { no: melhorNo, nome: 'ponto permitido mais perto', tipo: 'ponto', andar: md } : null;
+  paraciclosLista.forEach(function (pc) {
+    var andar = Rota.haversine(dest.lat, dest.lon, pc.la, pc.lo);
+    if (andar > 800 || (esc && andar > md + 200)) return;
+    var nó = Rota.maisPerto(grafo, pc.la, pc.lo, 60, true);
+    if (!nó || dist[nó.no] === Infinity) return;
+    if (!esc || esc.tipo === 'ponto' || andar < esc.andar) esc = { no: nó.no, nome: pc.n, tipo: 'paraciclo', andar: andar };
+  });
+  if (!esc) return null;
+  var r = Rota.caminho(grafo, a.no, esc.no, true, 'padrao', false);
+  if (!r) return null;
+  return { r: r, info: { nome: esc.nome, tipo: esc.tipo, lat: grafo.lat[esc.no], lon: grafo.lon[esc.no], andar: Rota.haversine(dest.lat, dest.lon, grafo.lat[esc.no], grafo.lon[esc.no]) } };
+}
+
 function mostrarBusca(on) {
   document.getElementById('linha-busca').style.display = on ? 'flex' : 'none';
   document.getElementById('atalhos').style.display = on && lerMeus().length ? 'flex' : 'none';
@@ -532,6 +555,13 @@ function calcular(opcoes) {
     var rf = Rota.caminho(grafo, a2.no, b2.no, true, 'padrao', true);
     if (!rf) { resumo.textContent = 'Não achei caminho entre esses dois pontos: faltam ruas no mapa entre eles.'; return; }
     alternativas = [{ modo: 'padrao', nome: 'Equilibrada', r: rf }]; a = a2; b = b2;
+    var est = acharEstacionamento(a, destino);
+    if (est && est.info.andar <= 1200) {
+      // caminhada curta: sugere deixar e ir a pé; caminhada longa: continua valendo o caminho mais curto, com a opção na lista
+      if (est.info.andar <= 600) alternativas.unshift({ modo: 'estaciona', nome: 'Deixar e ir a pé', r: est.r, estaciona: est.info });
+      else alternativas.push({ modo: 'estaciona', nome: 'Deixar e ir a pé', r: est.r, estaciona: est.info });
+      if (!emGuia) modoRota = est.info.andar <= 600 ? 'estaciona' : 'padrao';
+    }
   }
   var esc = alternativas.filter(function (x) { return x.modo === modoRota; })[0] || alternativas[0];
   modoRota = esc.modo; ctxRota = { de: de, a: a, b: b, emGuia: emGuia }; falados = {};
@@ -556,6 +586,12 @@ function mostrarRota(esc) {
   rotaAtual.alertas = obstLista.length ? Guia.alertas(rotaAtual, obstLista) : []; progresso = 0; foraConta = 0;
   linhaRota = L.polyline(r.pontos, { color: '#7a1fd1', weight: 7, opacity: .9, pane: 'gps', interactive: false }).addTo(camadaRota);
   desenharProibidos(r);
+  rotaAtual.estaciona = esc.estaciona || null;
+  if (esc.estaciona) {
+    var ep = esc.estaciona;
+    L.polyline([[ep.lat, ep.lon], [destino.lat, destino.lon]], { color: '#555', weight: 4, dashArray: '2 8', pane: 'gps', interactive: false }).addTo(camadaRota);
+    L.marker([ep.lat, ep.lon], { icon: L.divIcon({ className: '', html: '<div class="pino" style="background:#1565c0">P</div>', iconSize: [28, 28], iconAnchor: [14, 14] }), interactive: false, keyboard: false }).addTo(camadaRota);
+  }
   achados.textContent = '';
   mostrarBusca(false);
   if (emGuia) { desenharGuia(); return; }
@@ -565,7 +601,7 @@ function mostrarRota(esc) {
   var min = Math.max(1, Math.round(r.metros / 1000 / VELOCIDADE_KMH * 60));
   var t = document.createElement('div');
   var linha = document.createElement('div'); linha.className = 'linha-rota';
-  var soma = document.createElement('span'); soma.className = 'soma'; soma.textContent = metros(r.metros) + ' · ' + min + ' min · chega ' + horaDaChegada(min); linha.appendChild(soma);
+  var soma = document.createElement('span'); soma.className = 'soma'; soma.textContent = metros(r.metros) + ' · ' + min + ' min' + (esc.estaciona ? ' + ' + metros(esc.estaciona.andar) + ' a pé' : '') + ' · chega ' + horaDaChegada(min + (esc.estaciona ? Math.round(esc.estaciona.andar / 80) : 0)); linha.appendChild(soma);
   var lista = document.createElement('div'); lista.className = 'lista-ruas'; lista.style.display = 'none';
   r.trechos.forEach(function (z) { var li = document.createElement('div'); li.textContent = z.nome + ' · ' + metros(z.metros); lista.appendChild(li); });
   var ruas = document.createElement('button'); ruas.className = 'leve'; ruas.textContent = 'Ruas';
@@ -577,12 +613,13 @@ function mostrarRota(esc) {
   if (alternativas.length > 1) {
     var mo = document.createElement('div'); mo.className = 'modos';
     alternativas.forEach(function (x) {
-      var bt = document.createElement('button'); bt.textContent = x.nome + ' ' + metros(x.r.metros); if (x === esc) bt.className = 'ativo';
+      var bt = document.createElement('button'); bt.textContent = x.nome + ' ' + metros(x.r.metros) + (x.estaciona ? ' + ' + metros(x.estaciona.andar) : ''); if (x === esc) bt.className = 'ativo';
       bt.addEventListener('click', function () { modoRota = x.modo; mostrarRota(x); }); mo.appendChild(bt);
     });
     t.appendChild(mo);
   }
   if (r.temIncerta) { var l2 = document.createElement('div'); l2.className = 'aviso-rota'; l2.textContent = 'Passa por trecho sem velocidade marcada: confira a placa.'; t.appendChild(l2); }
+  if (esc.estaciona) { var l6 = document.createElement('div'); l6.className = 'aviso-rota'; l6.style.color = '#1565c0'; l6.textContent = 'Não dá para chegar de autopropelido até o destino. Deixe-o ' + (esc.estaciona.tipo === 'paraciclo' ? 'no paraciclo (' + esc.estaciona.nome + ')' : 'no ponto permitido mais perto') + ' e siga a pé ' + metros(esc.estaciona.andar) + '.'; t.appendChild(l6); }
   if (r.proibido > 20) { var l4 = document.createElement('div'); l4.className = 'aviso-rota'; l4.style.color = '#b71c1c'; l4.textContent = 'Não achei caminho só por ruas permitidas. Este é o mais curto e passa por ' + metros(r.proibido) + ' de via onde autopropelido não pode (em vermelho tracejado).'; t.appendChild(l4); }
   var pisoTxt = textoPiso(r.pedra, r.terra);
   if (pisoTxt) { var l3 = document.createElement('div'); l3.className = 'aviso-rota'; l3.textContent = pisoTxt; t.appendChild(l3); }
@@ -671,8 +708,9 @@ function atualizarGuia(ll, precisao) {
   progresso = pr.seg;
   if (linhaRota) linhaRota.setLatLngs([[pr.lat, pr.lon]].concat(rotaAtual.pts.slice(pr.seg + 1)));
   if (rotaAtual.total - pr.along < 25) {
-    var i = document.getElementById('guia-instr'); if (i) i.textContent = 'Você chegou';
-    falar('Você chegou ao destino');
+    var msgFim = rotaAtual.estaciona ? 'Você chegou. Deixe o autopropelido aqui e siga a pé ' + metros(rotaAtual.estaciona.andar) : 'Você chegou';
+    var i = document.getElementById('guia-instr'); if (i) i.textContent = msgFim;
+    falar(rotaAtual.estaciona ? 'Você chegou. Deixe o autopropelido aqui e siga a pé ' + aprox(rotaAtual.estaciona.andar) : 'Você chegou ao destino');
     var r = document.getElementById('guia-resto'); if (r) r.textContent = '';
     guiando = false; sairNavegacao(); if (travaTela) { try { travaTela.release(); } catch (e) {} travaTela = null; }
     return;
