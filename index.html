@@ -413,13 +413,14 @@ function ligarBussola() {
     if (typeof e.webkitCompassHeading === 'number') h = e.webkitCompassHeading;
     else if (e.absolute && e.alpha != null) h = 360 - e.alpha;
     if (h === null) return;
+    recebeuBussola = true;
     var ang = (screen.orientation && screen.orientation.angle) || 0;
     definirRumo((h + ang + 360) % 360, 'bussola');
   }
   window.addEventListener('deviceorientationabsolute', ao, true);
   window.addEventListener('deviceorientation', ao, true);
 }
-var bussolaPedida = false;
+var bussolaPedida = false, recebeuBussola = false;
 function pedirBussola() {
   ligarBussola(); // sem permissão os eventos simplesmente não chegam; com permissão passam a chegar
   if (bussolaPedida) return; bussolaPedida = true;
@@ -624,6 +625,7 @@ function iniciarGuia() {
   guiando = true;
   if (origem) { origem = null; if (pinos.origem) { mapa.removeLayer(pinos.origem); pinos.origem = null; } }
   pedirBussola(); destravarVoz();
+  setTimeout(function () { if (guiando && !recebeuBussola) { aviso('Sem bússola: o mapa gira só enquanto você anda'); setTimeout(function () { aviso(''); }, 5000); } }, 5000);
   try { if (navigator.wakeLock) navigator.wakeLock.request('screen').then(function (w) { travaTela = w; }).catch(function () {}); } catch (e) {}
   calcular({ guia: true });
   entrarNavegacao();
