@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches: [claude/jolly-davinci-8uissp]
-    paths: [.github/workflows/pontos.yml]
+    paths: [.github/workflows/pontos.yml, scripts/baixar-pontos.py]
   schedule:
     - cron: '0 8 1 * *'
 
@@ -14,11 +14,11 @@ permissions:
 jobs:
   baixar:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 200
     steps:
       - uses: actions/checkout@v4
       - name: Baixar
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@users.noreply.github.com"
-          python3 scripts/baixar-pontos.py
+          SOMAR=1 GRADE=8 python3 scripts/baixar-pontos.py
